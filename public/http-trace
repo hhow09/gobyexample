@@ -25,6 +25,8 @@
           <td class="docs">
             <p>ref: <a href="https://youtu.be/u3YWN4TF81w">Go (Golang) httptrace Tutorial</a></p>
 
+<p>ref: <a href="https://yushuanhsieh.github.io/post/2019-03-14-http-trace/">Golang - Request test using net/http/httptrace</a></p>
+
           </td>
           <td class="code empty leading">
             
@@ -34,7 +36,7 @@
         
         <tr>
           <td class="docs">
-            <p>pkg detail: go doc httptrace.ClientTrace</p>
+            <p>doc: <a href="https://pkg.go.dev/net/http/httptrace">Go doc: httptrace</a></p>
 
           </td>
           <td class="code empty leading">
@@ -83,7 +85,7 @@
             
           </td>
           <td class="code leading">
-            <a href="https://go.dev/play/p/W1TmHJztQfS"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+            <a href="https://go.dev/play/p/GaarJIjxAtj"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
           <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
 </pre>
           </td>
@@ -110,17 +112,63 @@
         
         <tr>
           <td class="docs">
+            <p>tracer for time tracking</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">type</span> <span class="nx">Tracer</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">start</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+    <span class="nx">end</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
             
           </td>
           <td class="code leading">
             
-          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span> <span class="s">&#34;http://example.com&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="nx">t0</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
-    <span class="kd">var</span> <span class="nx">getConn</span><span class="p">,</span> <span class="nx">dnsStart</span><span class="p">,</span> <span class="nx">dnsDone</span><span class="p">,</span> <span class="nx">gotConn</span><span class="p">,</span> <span class="nx">gotFirstResByte</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Tracer</span><span class="p">)</span> <span class="nf">GetConn</span><span class="p">(</span><span class="nx">hostPort</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;GetConn(%s) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">hostPort</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">start</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Tracer</span><span class="p">)</span> <span class="nf">DNSStart</span><span class="p">(</span><span class="nx">info</span> <span class="nx">httptrace</span><span class="p">.</span><span class="nx">DNSStartInfo</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;DNSStart(%+v) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">start</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Tracer</span><span class="p">)</span> <span class="nf">DNSDone</span><span class="p">(</span><span class="nx">info</span> <span class="nx">httptrace</span><span class="p">.</span><span class="nx">DNSDoneInfo</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;DNSDone(%+v) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">start</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Tracer</span><span class="p">)</span> <span class="nf">ConnectStart</span><span class="p">(</span><span class="nx">network</span><span class="p">,</span> <span class="nx">addr</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;ConnectStart(%s, %s) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">network</span><span class="p">,</span> <span class="nx">addr</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">start</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Tracer</span><span class="p">)</span> <span class="nf">ConnectDone</span><span class="p">(</span><span class="nx">network</span><span class="p">,</span> <span class="nx">addr</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;ConnectDone(%s, %s, %v) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">network</span><span class="p">,</span> <span class="nx">addr</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">start</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Tracer</span><span class="p">)</span> <span class="nf">GotConn</span><span class="p">(</span><span class="nx">info</span> <span class="nx">httptrace</span><span class="p">.</span><span class="nx">GotConnInfo</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;GotConn(%+v) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">start</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Tracer</span><span class="p">)</span> <span class="nf">GotFirstResponseByte</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">end</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;GotFirstResponseByte (delay) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">start</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Tracer</span><span class="p">)</span> <span class="nf">PutIdleConn</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">end</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;PutIdleConn(%+v) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">start</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
+<span class="p">}</span>
 </pre>
           </td>
         </tr>
@@ -133,49 +181,59 @@
           <td class="code leading">
             
           <pre class="chroma">
+<span class="kd">func</span> <span class="nf">createTrace</span><span class="p">()</span> <span class="o">*</span><span class="nx">httptrace</span><span class="p">.</span><span class="nx">ClientTrace</span> <span class="p">{</span>
+    <span class="nx">tracer</span> <span class="o">:=</span> <span class="nx">Tracer</span><span class="p">{</span><span class="nx">start</span><span class="p">:</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()}</span>
     <span class="nx">trace</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">httptrace</span><span class="p">.</span><span class="nx">ClientTrace</span><span class="p">{</span>
-        <span class="nx">GetConn</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">hostPort</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">getConn</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
-            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;GetConn(%s) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">hostPort</span><span class="p">,</span> <span class="nx">getConn</span><span class="p">.</span><span class="nf">Sub</span><span class="p">(</span><span class="nx">t0</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
-        <span class="p">},</span>
-        <span class="nx">DNSStart</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">info</span> <span class="nx">httptrace</span><span class="p">.</span><span class="nx">DNSStartInfo</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">dnsStart</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
-            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;DNSStart(%+v) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">dnsStart</span><span class="p">.</span><span class="nf">Sub</span><span class="p">(</span><span class="nx">t0</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
-        <span class="p">},</span>
-        <span class="nx">DNSDone</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">info</span> <span class="nx">httptrace</span><span class="p">.</span><span class="nx">DNSDoneInfo</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">dnsDone</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
-            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;DNSDone(%+v) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">dnsDone</span><span class="p">.</span><span class="nf">Sub</span><span class="p">(</span><span class="nx">t0</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
-        <span class="p">},</span>
-        <span class="nx">ConnectStart</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">network</span><span class="p">,</span> <span class="nx">addr</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;ConnectStart(%s, %s)\n&#34;</span><span class="p">,</span> <span class="nx">network</span><span class="p">,</span> <span class="nx">addr</span><span class="p">)</span>
-        <span class="p">},</span>
-        <span class="nx">ConnectDone</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">network</span><span class="p">,</span> <span class="nx">addr</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;ConnectDone(%s, %s, %v)\n&#34;</span><span class="p">,</span> <span class="nx">network</span><span class="p">,</span> <span class="nx">addr</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-        <span class="p">},</span>
-        <span class="nx">GotConn</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">info</span> <span class="nx">httptrace</span><span class="p">.</span><span class="nx">GotConnInfo</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">gotConn</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
-            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;GotConn(%+v) %d ms\n&#34;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">gotConn</span><span class="p">.</span><span class="nf">Sub</span><span class="p">(</span><span class="nx">t0</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
-        <span class="p">},</span>
-        <span class="nx">GotFirstResponseByte</span><span class="p">:</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-            <span class="nx">gotFirstResByte</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
-            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;GotFirstResponseByte %d ms\n&#34;</span><span class="p">,</span> <span class="nx">gotFirstResByte</span><span class="p">.</span><span class="nf">Sub</span><span class="p">(</span><span class="nx">t0</span><span class="p">).</span><span class="nf">Milliseconds</span><span class="p">())</span>
-        <span class="p">},</span>
-        <span class="nx">PutIdleConn</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">GetConn</span><span class="p">:</span>              <span class="nx">tracer</span><span class="p">.</span><span class="nx">GetConn</span><span class="p">,</span>
+        <span class="nx">DNSStart</span><span class="p">:</span>             <span class="nx">tracer</span><span class="p">.</span><span class="nx">DNSStart</span><span class="p">,</span>
+        <span class="nx">DNSDone</span><span class="p">:</span>              <span class="nx">tracer</span><span class="p">.</span><span class="nx">DNSDone</span><span class="p">,</span>
+        <span class="nx">ConnectStart</span><span class="p">:</span>         <span class="nx">tracer</span><span class="p">.</span><span class="nx">ConnectStart</span><span class="p">,</span>
+        <span class="nx">ConnectDone</span><span class="p">:</span>          <span class="nx">tracer</span><span class="p">.</span><span class="nx">ConnectDone</span><span class="p">,</span>
+        <span class="nx">GotConn</span><span class="p">:</span>              <span class="nx">tracer</span><span class="p">.</span><span class="nx">GotConn</span><span class="p">,</span>
+        <span class="nx">GotFirstResponseByte</span><span class="p">:</span> <span class="nx">tracer</span><span class="p">.</span><span class="nx">GotFirstResponseByte</span><span class="p">,</span>
 </pre>
           </td>
         </tr>
         
         <tr>
           <td class="docs">
-            <p>PutIdleConn is called when the connection is returned to the idle pool.</p>
+            <p>called when connection is put back to connection pool</p>
 
           </td>
           <td class="code leading">
             
           <pre class="chroma">
-            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;PutIdleConn(%+v)\n&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-        <span class="p">},</span>
+        <span class="nx">PutIdleConn</span><span class="p">:</span> <span class="nx">tracer</span><span class="p">.</span><span class="nx">PutIdleConn</span><span class="p">,</span>
     <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">trace</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">const</span> <span class="nx">url</span> <span class="p">=</span> <span class="s">&#34;http://example.com&#34;</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">trace</span> <span class="o">:=</span> <span class="nf">createTrace</span><span class="p">()</span>
 </pre>
           </td>
         </tr>
@@ -212,7 +270,7 @@
           </td>
           <td class="code leading">
             
-          <pre class="chroma">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1st Request to example.com&#34;</span><span class="p">)</span>
+          <pre class="chroma">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1st Request to&#34;</span><span class="p">,</span> <span class="nx">url</span><span class="p">)</span>
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">)</span>
 </pre>
           </td>
@@ -224,8 +282,7 @@
           </td>
           <td class="code leading">
             
-          <pre class="chroma">    <span class="nx">t0</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
-    <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">DefaultClient</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+          <pre class="chroma">    <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">DefaultClient</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
     <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
         <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
@@ -249,13 +306,19 @@
         
         <tr>
           <td class="docs">
-            
+            <p>Create Trace context</p>
+
           </td>
           <td class="code leading">
             
           <pre class="chroma">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">)</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;2nd Request to example.com&#34;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;2nd Request to&#34;</span><span class="p">,</span> <span class="nx">url</span><span class="p">)</span>
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">)</span>
+    <span class="nx">req2</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">trace</span> <span class="p">=</span> <span class="nf">createTrace</span><span class="p">()</span>
 </pre>
           </td>
         </tr>
@@ -264,9 +327,22 @@
           <td class="docs">
             
           </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">ctx</span> <span class="p">=</span> <span class="nx">httptrace</span><span class="p">.</span><span class="nf">WithClientTrace</span><span class="p">(</span><span class="nx">req2</span><span class="p">.</span><span class="nf">Context</span><span class="p">(),</span> <span class="nx">trace</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Attach Trace context to request</p>
+
+          </td>
           <td class="code">
             
-          <pre class="chroma">    <span class="nx">t0</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+          <pre class="chroma">
+    <span class="nx">req</span> <span class="p">=</span> <span class="nx">req</span><span class="p">.</span><span class="nf">WithContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
     <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">DefaultClient</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
     <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
         <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
@@ -287,7 +363,7 @@
           <td class="code leading">
             
           <pre class="chroma"><span class="gp">$</span> go run http-trace.go
-<span class="go">1st Request to example.com</span></pre>
+<span class="go">1st Request to http://example.com</span></pre>
           </td>
         </tr>
         
@@ -300,12 +376,12 @@
           <pre class="chroma"><span class="go">GetConn(example.com:80) 0 ms
 </span><span class="go">DNSStart({Host:example.com}) 0 ms
 </span><span class="go">DNSDone({Addrs:[{IP:2606:2800:220:1:248:1893:25c8:1946 Zone:} {IP:93.184.216.34 Zone:}] 
-</span><span class="go">Err:&lt;nil&gt; Coalesced:false}) 10 ms
-</span><span class="go">ConnectStart(tcp, [2606:2800:220:1:248:1893:25c8:1946]:80)
-</span><span class="go">ConnectDone(tcp, [2606:2800:220:1:248:1893:25c8:1946]:80, &lt;nil&gt;)
-</span><span class="go">GotConn({Conn:0x14000108000 Reused:false WasIdle:false IdleTime:0s}) 153 ms
-</span><span class="go">GotFirstResponseByte 296 ms
-</span><span class="go">PutIdleConn(&lt;nil&gt;)</span></pre>
+</span><span class="go">Err:&lt;nil&gt; Coalesced:false}) 11 ms
+</span><span class="go">ConnectStart(tcp, [2606:2800:220:1:248:1893:25c8:1946]:80) 11 ms
+</span><span class="go">ConnectDone(tcp, [2606:2800:220:1:248:1893:25c8:1946]:80, &lt;nil&gt;) 152 ms
+</span><span class="go">GotConn({Conn:0x14000094000 Reused:false WasIdle:false IdleTime:0s}) 152 ms
+</span><span class="go">GotFirstResponseByte (delay) 293 ms
+</span><span class="go">PutIdleConn(&lt;nil&gt;) 294 ms</span></pre>
           </td>
         </tr>
         
@@ -315,7 +391,7 @@
           </td>
           <td class="code leading">
             
-          <pre class="chroma"><span class="go">2nd Request to example.com</span></pre>
+          <pre class="chroma"><span class="go">2nd Request to http://example.com</span></pre>
           </td>
         </tr>
         
@@ -323,11 +399,23 @@
           <td class="docs">
             
           </td>
-          <td class="code">
+          <td class="code leading">
             
           <pre class="chroma"><span class="go">GetConn(example.com:80) 0 ms
-</span><span class="go">GotConn({Conn:0x14000108000 Reused:true WasIdle:true IdleTime:72.833µs}) 0 ms
-</span><span class="go">GotFirstResponseByte 142 ms</span></pre>
+</span><span class="go">GotConn({Conn:0x14000094000 Reused:true WasIdle:true IdleTime:152.916µs}) 0 ms
+</span><span class="go">GotFirstResponseByte (delay) 140 ms</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>for 1st Request, we can see PutIdleConn is called.
+for 2nd Request, DNS resolving part is skipped cuz it reused the previous connection.</p>
+
+          </td>
+          <td class="code empty">
+            
+          
           </td>
         </tr>
         
@@ -344,7 +432,7 @@
     </div>
     <script>
       var codeLines = [];
-      codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"fmt\"\u000A    \"io\"\u000A    \"io/ioutil\"\u000A    \"log\"\u000A    \"net/http\"\u000A    \"net/http/httptrace\"\u000A    \"time\"\u000A)\u000A');codeLines.push('func main() {\u000A    req, err :\u003D http.NewRequest(http.MethodGet, \"http://example.com\", nil)\u000A    if err !\u003D nil {\u000A        log.Fatal(err)\u000A    }\u000A    t0 :\u003D time.Now()\u000A    var getConn, dnsStart, dnsDone, gotConn, gotFirstResByte time.Time\u000A');codeLines.push('    trace :\u003D \u0026httptrace.ClientTrace{\u000A        GetConn: func(hostPort string) {\u000A            getConn \u003D time.Now()\u000A            fmt.Printf(\"GetConn(%s) %d ms\\n\", hostPort, getConn.Sub(t0).Milliseconds())\u000A        },\u000A        DNSStart: func(info httptrace.DNSStartInfo) {\u000A            dnsStart \u003D time.Now()\u000A            fmt.Printf(\"DNSStart(%+v) %d ms\\n\", info, dnsStart.Sub(t0).Milliseconds())\u000A        },\u000A        DNSDone: func(info httptrace.DNSDoneInfo) {\u000A            dnsDone \u003D time.Now()\u000A            fmt.Printf(\"DNSDone(%+v) %d ms\\n\", info, dnsDone.Sub(t0).Milliseconds())\u000A        },\u000A        ConnectStart: func(network, addr string) {\u000A            fmt.Printf(\"ConnectStart(%s, %s)\\n\", network, addr)\u000A        },\u000A        ConnectDone: func(network, addr string, err error) {\u000A            fmt.Printf(\"ConnectDone(%s, %s, %v)\\n\", network, addr, err)\u000A        },\u000A        GotConn: func(info httptrace.GotConnInfo) {\u000A            gotConn \u003D time.Now()\u000A            fmt.Printf(\"GotConn(%+v) %d ms\\n\", info, gotConn.Sub(t0).Milliseconds())\u000A        },\u000A        GotFirstResponseByte: func() {\u000A            gotFirstResByte \u003D time.Now()\u000A            fmt.Printf(\"GotFirstResponseByte %d ms\\n\", gotFirstResByte.Sub(t0).Milliseconds())\u000A        },\u000A        PutIdleConn: func(err error) {\u000A');codeLines.push('            fmt.Printf(\"PutIdleConn(%+v)\\n\", err)\u000A        },\u000A    }\u000A');codeLines.push('    ctx :\u003D httptrace.WithClientTrace(req.Context(), trace)\u000A');codeLines.push('    req \u003D req.WithContext(ctx)\u000A');codeLines.push('    fmt.Println(\"1st Request to example.com\")\u000A    fmt.Println(\"\")\u000A');codeLines.push('    t0 \u003D time.Now()\u000A    res, err :\u003D http.DefaultClient.Do(req)\u000A    if err !\u003D nil {\u000A        log.Fatal(err)\u000A    }\u000A');codeLines.push('    io.Copy(ioutil.Discard, res.Body)\u000A    res.Body.Close()\u000A');codeLines.push('    fmt.Println(\"\")\u000A    fmt.Println(\"2nd Request to example.com\")\u000A    fmt.Println(\"\")\u000A');codeLines.push('    t0 \u003D time.Now()\u000A    _, err \u003D http.DefaultClient.Do(req)\u000A    if err !\u003D nil {\u000A        log.Fatal(err)\u000A    }\u000A}\u000A');codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('');
+      codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"fmt\"\u000A    \"io\"\u000A    \"io/ioutil\"\u000A    \"log\"\u000A    \"net/http\"\u000A    \"net/http/httptrace\"\u000A    \"time\"\u000A)\u000A');codeLines.push('type Tracer struct {\u000A    start time.Time\u000A    end   time.Time\u000A}\u000A');codeLines.push('func (t *Tracer) GetConn(hostPort string) {\u000A    fmt.Printf(\"GetConn(%s) %d ms\\n\", hostPort, time.Since(t.start).Milliseconds())\u000A}\u000Afunc (t *Tracer) DNSStart(info httptrace.DNSStartInfo) {\u000A    fmt.Printf(\"DNSStart(%+v) %d ms\\n\", info, time.Since(t.start).Milliseconds())\u000A}\u000Afunc (t *Tracer) DNSDone(info httptrace.DNSDoneInfo) {\u000A    fmt.Printf(\"DNSDone(%+v) %d ms\\n\", info, time.Since(t.start).Milliseconds())\u000A}\u000Afunc (t *Tracer) ConnectStart(network, addr string) {\u000A    fmt.Printf(\"ConnectStart(%s, %s) %d ms\\n\", network, addr, time.Since(t.start).Milliseconds())\u000A}\u000Afunc (t *Tracer) ConnectDone(network, addr string, err error) {\u000A    fmt.Printf(\"ConnectDone(%s, %s, %v) %d ms\\n\", network, addr, err,\u000A        time.Since(t.start).Milliseconds())\u000A}\u000Afunc (t *Tracer) GotConn(info httptrace.GotConnInfo) {\u000A    fmt.Printf(\"GotConn(%+v) %d ms\\n\", info, time.Since(t.start).Milliseconds())\u000A}\u000Afunc (t *Tracer) GotFirstResponseByte() {\u000A    t.end \u003D time.Now()\u000A    fmt.Printf(\"GotFirstResponseByte (delay) %d ms\\n\", time.Since(t.start).Milliseconds())\u000A}\u000A');codeLines.push('func (t *Tracer) PutIdleConn(err error) {\u000A    t.end \u003D time.Now()\u000A    fmt.Printf(\"PutIdleConn(%+v) %d ms\\n\", err, time.Since(t.start).Milliseconds())\u000A}\u000A');codeLines.push('func createTrace() *httptrace.ClientTrace {\u000A    tracer :\u003D Tracer{start: time.Now()}\u000A    trace :\u003D \u0026httptrace.ClientTrace{\u000A        GetConn:              tracer.GetConn,\u000A        DNSStart:             tracer.DNSStart,\u000A        DNSDone:              tracer.DNSDone,\u000A        ConnectStart:         tracer.ConnectStart,\u000A        ConnectDone:          tracer.ConnectDone,\u000A        GotConn:              tracer.GotConn,\u000A        GotFirstResponseByte: tracer.GotFirstResponseByte,\u000A');codeLines.push('        PutIdleConn: tracer.PutIdleConn,\u000A    }\u000A    return trace\u000A}\u000A');codeLines.push('const url \u003D \"http://example.com\"\u000A');codeLines.push('func main() {\u000A    req, err :\u003D http.NewRequest(http.MethodGet, url, nil)\u000A    if err !\u003D nil {\u000A        log.Fatal(err)\u000A    }\u000A    trace :\u003D createTrace()\u000A');codeLines.push('    ctx :\u003D httptrace.WithClientTrace(req.Context(), trace)\u000A');codeLines.push('    req \u003D req.WithContext(ctx)\u000A');codeLines.push('    fmt.Println(\"1st Request to\", url)\u000A    fmt.Println(\"\")\u000A');codeLines.push('    res, err :\u003D http.DefaultClient.Do(req)\u000A    if err !\u003D nil {\u000A        log.Fatal(err)\u000A    }\u000A');codeLines.push('    io.Copy(ioutil.Discard, res.Body)\u000A    res.Body.Close()\u000A');codeLines.push('    fmt.Println(\"\")\u000A    fmt.Println(\"2nd Request to\", url)\u000A    fmt.Println(\"\")\u000A    req2, err :\u003D http.NewRequest(http.MethodGet, url, nil)\u000A    if err !\u003D nil {\u000A        log.Fatal(err)\u000A    }\u000A    trace \u003D createTrace()\u000A');codeLines.push('    ctx \u003D httptrace.WithClientTrace(req2.Context(), trace)\u000A');codeLines.push('    req \u003D req.WithContext(ctx)\u000A    _, err \u003D http.DefaultClient.Do(req)\u000A    if err !\u003D nil {\u000A        log.Fatal(err)\u000A    }\u000A}\u000A');codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('');
     </script>
     <script src="site.js" async></script>
   </body>

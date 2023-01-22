@@ -1,6 +1,8 @@
 // ref: [Go (Golang) httptrace Tutorial](https://youtu.be/u3YWN4TF81w)
+//
+// ref: [Golang - Request test using net/http/httptrace](https://yushuanhsieh.github.io/post/2019-03-14-http-trace/)
 
-// pkg detail: go doc httptrace.ClientTrace
+// doc: [Go doc: httptrace](https://pkg.go.dev/net/http/httptrace)
 
 // 1) HTTP Request/Response - Trace Events
 //
@@ -39,47 +41,66 @@ import (
 	"time"
 )
 
+// tracer for time tracking
+type Tracer struct {
+	start time.Time
+	end   time.Time
+}
+
+func (t *Tracer) GetConn(hostPort string) {
+	fmt.Printf("GetConn(%s) %d ms\n", hostPort, time.Since(t.start).Milliseconds())
+}
+func (t *Tracer) DNSStart(info httptrace.DNSStartInfo) {
+	fmt.Printf("DNSStart(%+v) %d ms\n", info, time.Since(t.start).Milliseconds())
+}
+func (t *Tracer) DNSDone(info httptrace.DNSDoneInfo) {
+	fmt.Printf("DNSDone(%+v) %d ms\n", info, time.Since(t.start).Milliseconds())
+}
+func (t *Tracer) ConnectStart(network, addr string) {
+	fmt.Printf("ConnectStart(%s, %s) %d ms\n", network, addr, time.Since(t.start).Milliseconds())
+}
+func (t *Tracer) ConnectDone(network, addr string, err error) {
+	fmt.Printf("ConnectDone(%s, %s, %v) %d ms\n", network, addr, err,
+		time.Since(t.start).Milliseconds())
+}
+func (t *Tracer) GotConn(info httptrace.GotConnInfo) {
+	fmt.Printf("GotConn(%+v) %d ms\n", info, time.Since(t.start).Milliseconds())
+}
+func (t *Tracer) GotFirstResponseByte() {
+	t.end = time.Now()
+	fmt.Printf("GotFirstResponseByte (delay) %d ms\n", time.Since(t.start).Milliseconds())
+}
+
+func (t *Tracer) PutIdleConn(err error) {
+	t.end = time.Now()
+	fmt.Printf("PutIdleConn(%+v) %d ms\n", err, time.Since(t.start).Milliseconds())
+}
+
+// Create Trace Info
+func createTrace() *httptrace.ClientTrace {
+	tracer := Tracer{start: time.Now()}
+	trace := &httptrace.ClientTrace{
+		GetConn:              tracer.GetConn,
+		DNSStart:             tracer.DNSStart,
+		DNSDone:              tracer.DNSDone,
+		ConnectStart:         tracer.ConnectStart,
+		ConnectDone:          tracer.ConnectDone,
+		GotConn:              tracer.GotConn,
+		GotFirstResponseByte: tracer.GotFirstResponseByte,
+		// called when connection is put back to connection pool
+		PutIdleConn: tracer.PutIdleConn,
+	}
+	return trace
+}
+
+const url = "http://example.com"
+
 func main() {
-	req, err := http.NewRequest(http.MethodGet, "http://example.com", nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	t0 := time.Now()
-	var getConn, dnsStart, dnsDone, gotConn, gotFirstResByte time.Time
-
-	// Create Trace Info
-	trace := &httptrace.ClientTrace{
-		GetConn: func(hostPort string) {
-			getConn = time.Now()
-			fmt.Printf("GetConn(%s) %d ms\n", hostPort, getConn.Sub(t0).Milliseconds())
-		},
-		DNSStart: func(info httptrace.DNSStartInfo) {
-			dnsStart = time.Now()
-			fmt.Printf("DNSStart(%+v) %d ms\n", info, dnsStart.Sub(t0).Milliseconds())
-		},
-		DNSDone: func(info httptrace.DNSDoneInfo) {
-			dnsDone = time.Now()
-			fmt.Printf("DNSDone(%+v) %d ms\n", info, dnsDone.Sub(t0).Milliseconds())
-		},
-		ConnectStart: func(network, addr string) {
-			fmt.Printf("ConnectStart(%s, %s)\n", network, addr)
-		},
-		ConnectDone: func(network, addr string, err error) {
-			fmt.Printf("ConnectDone(%s, %s, %v)\n", network, addr, err)
-		},
-		GotConn: func(info httptrace.GotConnInfo) {
-			gotConn = time.Now()
-			fmt.Printf("GotConn(%+v) %d ms\n", info, gotConn.Sub(t0).Milliseconds())
-		},
-		GotFirstResponseByte: func() {
-			gotFirstResByte = time.Now()
-			fmt.Printf("GotFirstResponseByte %d ms\n", gotFirstResByte.Sub(t0).Milliseconds())
-		},
-		PutIdleConn: func(err error) {
-			// PutIdleConn is called when the connection is returned to the idle pool.
-			fmt.Printf("PutIdleConn(%+v)\n", err)
-		},
-	}
+	trace := createTrace()
 
 	// Create Trace context
 	ctx := httptrace.WithClientTrace(req.Context(), trace)
@@ -87,10 +108,9 @@ func main() {
 	// Attach Trace context to request
 	req = req.WithContext(ctx)
 
-	fmt.Println("1st Request to example.com")
+	fmt.Println("1st Request to", url)
 	fmt.Println("")
 
-	t0 = time.Now()
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal(err)
@@ -101,10 +121,18 @@ func main() {
 	res.Body.Close()
 
 	fmt.Println("")
-	fmt.Println("2nd Request to example.com")
+	fmt.Println("2nd Request to", url)
 	fmt.Println("")
+	req2, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	trace = createTrace()
+	// Create Trace context
+	ctx = httptrace.WithClientTrace(req2.Context(), trace)
 
-	t0 = time.Now()
+	// Attach Trace context to request
+	req = req.WithContext(ctx)
 	_, err = http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal(err)
