@@ -9,12 +9,12 @@
       onkeydown = (e) => {
           
           if (e.key == "ArrowLeft") {
-              window.location.href = 'arrays';
+              window.location.href = 'arrays.html';
           }
           
           
           if (e.key == "ArrowRight") {
-              window.location.href = 'http-roundtripper';
+              window.location.href = 'http-roundtripper.html';
           }
           
       }
@@ -449,7 +449,7 @@ implementation of slices in Go.</p>
       
       
       <p class="next">
-        Next example: <a href="http-roundtripper">Http RoundTripper</a>.
+        Next example: <a href="http-roundtripper.html">Http RoundTripper</a>.
       </p>
       
 

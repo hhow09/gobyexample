@@ -9,12 +9,12 @@
       onkeydown = (e) => {
           
           if (e.key == "ArrowLeft") {
-              window.location.href = 'slices';
+              window.location.href = 'slices.html';
           }
           
           
           if (e.key == "ArrowRight") {
-              window.location.href = 'http-trace';
+              window.location.href = 'http-trace.html';
           }
           
       }
@@ -415,7 +415,7 @@ the default one (http.DefaultTransport)</p>
       
       
       <p class="next">
-        Next example: <a href="http-trace">Http Trace</a>.
+        Next example: <a href="http-trace.html">Http Trace</a>.
       </p>
       
 
