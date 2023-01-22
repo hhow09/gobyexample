@@ -18,7 +18,7 @@
 1. [Golang 面试题搜集](https://github.com/lifei6671/interview-go)
 
 ## [Roadmap](https://roadmap.sh/golang)
-![roadmap](./go-raodmap.png)
+![roadmap](./docs/go-raodmap.png)
 
 ## Project
 1. [Simple Bank](https://github.com/hhow09/simple_bank)
