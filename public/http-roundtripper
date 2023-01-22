@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Go by Example: Http RoundTripper</title>
+    <link rel=stylesheet href="site.css">
+  </head>
+  <script>
+      onkeydown = (e) => {
+          
+          if (e.key == "ArrowLeft") {
+              window.location.href = 'slices';
+          }
+          
+          
+          if (e.key == "ArrowRight") {
+              window.location.href = 'http-trace';
+          }
+          
+      }
+  </script>
+  <body>
+    <div class="example" id="http-roundtripper">
+      <h2><a href="./">Go by Example</a>: Http RoundTripper</h2>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            <p>docs: <a href="https://pkg.go.dev/net/http#RoundTripper">https://pkg.go.dev/net/http#RoundTripper</a></p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>ref: <a href="https://youtu.be/UERCdBrka-o">https://youtu.be/UERCdBrka-o</a></p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>use cases: 1) logging 2) retrying 3) auth 4) caching 5) headers manipulation 6) testing</p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            <a href="https://go.dev/play/p/iBOtOijr0t_X"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+          <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;io&#34;</span>
+    <span class="s">&#34;io/ioutil&#34;</span>
+    <span class="s">&#34;net/http&#34;</span>
+    <span class="s">&#34;os&#34;</span>
+    <span class="s">&#34;time&#34;</span>
+<span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">const</span> <span class="nx">OK_URL</span> <span class="p">=</span> <span class="s">&#34;http://httpbin.org/status/200&#34;</span>
+<span class="kd">const</span> <span class="nx">BAD_REQ_URL</span> <span class="p">=</span> <span class="s">&#34;http://httpbin.org/status/500&#34;</span>
+<span class="kd">const</span> <span class="nx">NEED_AUTH_URL</span> <span class="p">=</span> <span class="s">&#34;http://httpbin.org/basic-auth/bob/pwd&#34;</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>create a chain of roundtripper before
+the default one (http.DefaultTransport)</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">delay</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+    <span class="nx">c</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span><span class="p">{</span>
+        <span class="nx">Transport</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">authRoundTripper</span><span class="p">{</span>
+            <span class="nx">next</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">retryRoundTripper</span><span class="p">{</span>
+                <span class="nx">next</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">loggingRoundTripper</span><span class="p">{</span>
+                    <span class="nx">next</span><span class="p">:</span>   <span class="nx">http</span><span class="p">.</span><span class="nx">DefaultTransport</span><span class="p">,</span>
+                    <span class="nx">logger</span><span class="p">:</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="nx">maxRetries</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="nx">delay</span><span class="p">:</span>      <span class="nx">delay</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="nx">user</span><span class="p">:</span> <span class="s">&#34;bob&#34;</span><span class="p">,</span>
+            <span class="nx">pwd</span><span class="p">:</span>  <span class="s">&#34;pwd&#34;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>request auth url</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span> <span class="nx">NEED_AUTH_URL</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">body</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadAll</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="nx">res</span><span class="p">.</span><span class="nx">Body</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;\n--- RESPONSE ---&#34;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;STATUS CODE: &#34;</span><span class="p">,</span> <span class="nx">res</span><span class="p">.</span><span class="nx">StatusCode</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;BODY: &#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">body</span><span class="p">))</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>request status 500 url (should retry)</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span> <span class="s">&#34;http://httpbin.org/status/500&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">body</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadAll</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="nx">res</span><span class="p">.</span><span class="nx">Body</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;\n--- RESPONSE ---&#34;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;STATUS CODE: &#34;</span><span class="p">,</span> <span class="nx">res</span><span class="p">.</span><span class="nx">StatusCode</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;BODY: &#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">body</span><span class="p">))</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">authRoundTripper</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">next</span>      <span class="nx">http</span><span class="p">.</span><span class="nx">RoundTripper</span>
+    <span class="nx">user</span><span class="p">,</span> <span class="nx">pwd</span> <span class="kt">string</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="nx">authRoundTripper</span><span class="p">)</span> <span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">r</span><span class="p">.</span><span class="nf">SetBasicAuth</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">user</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">pwd</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">next</span><span class="p">.</span><span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">retryRoundTripper</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">next</span>       <span class="nx">http</span><span class="p">.</span><span class="nx">RoundTripper</span>
+    <span class="nx">maxRetries</span> <span class="kt">int</span>
+    <span class="nx">delay</span>      <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span> <span class="c1">// delay between each retry
+</span><span class="c1"></span><span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">rr</span> <span class="nx">retryRoundTripper</span><span class="p">)</span> <span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">attempts</span> <span class="kt">int</span>
+    <span class="k">for</span> <span class="p">{</span>
+        <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rr</span><span class="p">.</span><span class="nx">next</span><span class="p">.</span><span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+        <span class="nx">attempts</span><span class="o">++</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>max retries exceeded</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+        <span class="k">if</span> <span class="nx">attempts</span> <span class="o">==</span> <span class="nx">rr</span><span class="p">.</span><span class="nx">maxRetries</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span>
+        <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>good outcome</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">StatusCode</span> <span class="p">&lt;</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusInternalServerError</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span>
+        <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>delay and retry</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+        <span class="k">select</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>return if context is already canceled</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+        <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">r</span><span class="p">.</span><span class="nf">Context</span><span class="p">().</span><span class="nf">Done</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Context</span><span class="p">().</span><span class="nf">Err</span><span class="p">()</span>
+        <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">time</span><span class="p">.</span><span class="nf">After</span><span class="p">(</span><span class="nx">rr</span><span class="p">.</span><span class="nx">delay</span><span class="p">):</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">loggingRoundTripper</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">next</span>   <span class="nx">http</span><span class="p">.</span><span class="nx">RoundTripper</span>
+    <span class="nx">logger</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>RoundTrip is a decorator on top of the default roundtripper</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="p">(</span><span class="nx">l</span> <span class="nx">loggingRoundTripper</span><span class="p">)</span> <span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>here we can log our message and info</p>
+
+          </td>
+          <td class="code">
+            
+          <pre class="chroma">
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">l</span><span class="p">.</span><span class="nx">logger</span><span class="p">,</span> <span class="s">&#34;[%s] %s %s\n&#34;</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">Format</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">ANSIC</span><span class="p">),</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nx">Method</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
+    <span class="k">return</span> <span class="nx">l</span><span class="p">.</span><span class="nx">next</span><span class="p">.</span><span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="gp">$</span> go run http-roundtripper.go
+<span class="go">[Sun Jan 22 16:31:10 2023] GET http://httpbin.org/basic-auth/bob/pwd</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="go">--- RESPONSE ---
+</span><span class="go">STATUS CODE:  200
+</span><span class="go">BODY:  {
+</span><span class="go">  &#34;authenticated&#34;: true, 
+</span><span class="go">  &#34;user&#34;: &#34;bob&#34;
+</span><span class="go">}</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="go">[Sun Jan 22 16:31:11 2023] GET http://httpbin.org/status/500
+</span><span class="go">[Sun Jan 22 16:31:12 2023] GET http://httpbin.org/status/500
+</span><span class="go">[Sun Jan 22 16:31:14 2023] GET http://httpbin.org/status/500</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="go">--- RESPONSE ---
+</span><span class="go">STATUS CODE:  500
+</span><span class="go">BODY:</span></pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      
+      <p class="next">
+        Next example: <a href="http-trace">Http Trace</a>.
+      </p>
+      
+
+    <p class="footer">
+      <a href="https://github.com/hhow09/gobyexample">source</a>
+      <br/>
+      Forked from <a href="https://gobyexample.com">Go by Example</a>
+    </p>
+
+    </div>
+    <script>
+      var codeLines = [];
+      codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"fmt\"\u000A    \"io\"\u000A    \"io/ioutil\"\u000A    \"net/http\"\u000A    \"os\"\u000A    \"time\"\u000A)\u000A');codeLines.push('const OK_URL \u003D \"http://httpbin.org/status/200\"\u000Aconst BAD_REQ_URL \u003D \"http://httpbin.org/status/500\"\u000Aconst NEED_AUTH_URL \u003D \"http://httpbin.org/basic-auth/bob/pwd\"\u000A');codeLines.push('func main() {\u000A');codeLines.push('    delay :\u003D time.Duration(1 * time.Second)\u000A    c :\u003D \u0026http.Client{\u000A        Transport: \u0026authRoundTripper{\u000A            next: \u0026retryRoundTripper{\u000A                next: \u0026loggingRoundTripper{\u000A                    next:   http.DefaultTransport,\u000A                    logger: os.Stdout,\u000A                },\u000A                maxRetries: 3,\u000A                delay:      delay,\u000A            },\u000A            user: \"bob\",\u000A            pwd:  \"pwd\",\u000A        },\u000A    }\u000A');codeLines.push('    req, err :\u003D http.NewRequest(http.MethodGet, NEED_AUTH_URL, nil)\u000A    if err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    res, err :\u003D c.Do(req)\u000A    if err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    body, err :\u003D ioutil.ReadAll(res.Body)\u000A    if err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    defer res.Body.Close()\u000A    fmt.Println(\"\\n--- RESPONSE ---\")\u000A    fmt.Println(\"STATUS CODE: \", res.StatusCode)\u000A    fmt.Println(\"BODY: \", string(body))\u000A');codeLines.push('    req, err \u003D http.NewRequest(http.MethodGet, \"http://httpbin.org/status/500\", nil)\u000A    if err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    res, err \u003D c.Do(req)\u000A    if err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    body, err \u003D ioutil.ReadAll(res.Body)\u000A    if err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    defer res.Body.Close()\u000A    fmt.Println(\"\\n--- RESPONSE ---\")\u000A    fmt.Println(\"STATUS CODE: \", res.StatusCode)\u000A    fmt.Println(\"BODY: \", string(body))\u000A}\u000A');codeLines.push('type authRoundTripper struct {\u000A    next      http.RoundTripper\u000A    user, pwd string\u000A}\u000A');codeLines.push('func (a authRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {\u000A    r.SetBasicAuth(a.user, a.pwd)\u000A    return a.next.RoundTrip(r)\u000A}\u000A');codeLines.push('type retryRoundTripper struct {\u000A    next       http.RoundTripper\u000A    maxRetries int\u000A    delay      time.Duration // delay between each retry\u000A}\u000A');codeLines.push('func (rr retryRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {\u000A    var attempts int\u000A    for {\u000A        res, err :\u003D rr.next.RoundTrip(r)\u000A        attempts++\u000A');codeLines.push('        if attempts \u003D\u003D rr.maxRetries {\u000A            return res, err\u000A        }\u000A');codeLines.push('        if err \u003D\u003D nil \u0026\u0026 res.StatusCode \u003C http.StatusInternalServerError {\u000A            return res, err\u000A        }\u000A');codeLines.push('        select {\u000A');codeLines.push('        case \u003C-r.Context().Done():\u000A            return res, r.Context().Err()\u000A        case \u003C-time.After(rr.delay):\u000A        }\u000A    }\u000A}\u000A');codeLines.push('type loggingRoundTripper struct {\u000A    next   http.RoundTripper\u000A    logger io.Writer\u000A}\u000A');codeLines.push('func (l loggingRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {\u000A');codeLines.push('    fmt.Fprintf(l.logger, \"[%s] %s %s\\n\", time.Now().Format(time.ANSIC),\u000A        r.Method, r.URL.String())\u000A    return l.next.RoundTrip(r)\u000A}\u000A');codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('');
+    </script>
+    <script src="site.js" async></script>
+  </body>
+</html>
