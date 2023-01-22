@@ -14,15 +14,9 @@
 2. [awesome-patterns](https://crazybber.github.io/awesome-patterns/)
 3. [Standard Go Project Layout](https://github.com/golang-standards/project-layout)
 
-## Interview 
-1. [Golang 面试题搜集](https://github.com/lifei6671/interview-go)
-
 ## [Roadmap](https://roadmap.sh/golang)
 ![roadmap](./docs/go-raodmap.png)
 
-## Project
-1. [Simple Bank](https://github.com/hhow09/simple_bank)
-
-## TODOs
+## DBs
 1. [Awesome Go Storage](https://github.com/gostor/awesome-go-storage)
 2. [Popular Database Implementations in Go](https://www.linkedin.com/pulse/popular-database-implementations-go-kanan-rahimov/)
