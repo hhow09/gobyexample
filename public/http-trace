@@ -13,6 +13,10 @@
           }
           
           
+          if (e.key == "ArrowRight") {
+              window.location.href = 'rwmutex.html';
+          }
+          
       }
   </script>
   <body>
@@ -421,6 +425,10 @@ for 2nd Request, DNS resolving part is skipped cuz it reused the previous connec
         
       </table>
       
+      
+      <p class="next">
+        Next example: <a href="rwmutex.html">RWMutex</a>.
+      </p>
       
 
     <p class="footer">
