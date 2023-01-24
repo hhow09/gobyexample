@@ -105,9 +105,14 @@ type Seg struct {
 	CodeEmpty, CodeLeading, CodeRun bool
 }
 
+type ExampleNameID struct {
+	Name string
+	ID   string
+}
+
 // Example is info extracted from an example file
 type Example struct {
-	ID, Name                    string
+	ExampleNameID
 	GoCode, GoCodeHash, URLHash string
 	Segs                        [][]*Seg
 	PrevExample                 *Example
@@ -237,27 +242,44 @@ func parseAndRenderSegs(sourcePath string) ([]*Seg, string) {
 	return segs, filecontent
 }
 
-func parseExamples() []*Example {
-	var exampleNames []string
-	for _, line := range readLines("examples.txt") {
+const EXAMPLE_FILE_SEPARATOR = "|"
+
+func parseID(exampleName string) string {
+	exampleID := strings.ToLower(exampleName)
+	exampleID = strings.Replace(exampleID, " ", "-", -1)
+	exampleID = strings.Replace(exampleID, "/", "-", -1)
+	exampleID = strings.Replace(exampleID, "'", "", -1)
+	exampleID = dashPat.ReplaceAllString(exampleID, "-")
+	return exampleID
+}
+
+func parseExampleList(fileName string) []ExampleNameID {
+	res := []ExampleNameID{}
+	for _, line := range readLines(fileName) {
 		if line != "" && !strings.HasPrefix(line, "#") {
-			exampleNames = append(exampleNames, line)
+			if strings.Contains(line, EXAMPLE_FILE_SEPARATOR) {
+				split := strings.Split(line, EXAMPLE_FILE_SEPARATOR)
+				res = append(res, ExampleNameID{Name: strings.Trim(split[0], " "), ID: strings.Trim(split[1], " ")})
+			} else {
+				trimmedLine := strings.Trim(line, " ")
+				res = append(res, ExampleNameID{Name: trimmedLine, ID: parseID(trimmedLine)})
+			}
+
 		}
 	}
+	return res
+}
+
+func parseExamples() []*Example {
+	parsedList := parseExampleList("examples.txt")
 	examples := make([]*Example, 0)
-	for i, exampleName := range exampleNames {
+	for i, exampleItem := range parsedList {
 		if verbose() {
-			fmt.Printf("Processing %s [%d/%d]\n", exampleName, i+1, len(exampleNames))
+			fmt.Printf("Processing %s [%d/%d]\n", exampleItem.Name, i+1, len(parsedList))
 		}
-		example := Example{Name: exampleName}
-		exampleID := strings.ToLower(exampleName)
-		exampleID = strings.Replace(exampleID, " ", "-", -1)
-		exampleID = strings.Replace(exampleID, "/", "-", -1)
-		exampleID = strings.Replace(exampleID, "'", "", -1)
-		exampleID = dashPat.ReplaceAllString(exampleID, "-")
-		example.ID = exampleID
+		example := Example{ExampleNameID: ExampleNameID{Name: exampleItem.Name, ID: exampleItem.ID}}
 		example.Segs = make([][]*Seg, 0)
-		sourcePaths := mustGlob("examples/" + exampleID + "/*")
+		sourcePaths := mustGlob("examples/" + example.ID + "/*")
 		for _, sourcePath := range sourcePaths {
 			if !isDir(sourcePath) {
 				if strings.HasSuffix(sourcePath, ".hash") {

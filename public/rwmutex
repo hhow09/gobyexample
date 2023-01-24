@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Go by Example: RWMutex</title>
+    <title>Go by Example: sync.RWMutex</title>
     <link rel=stylesheet href="site.css">
   </head>
   <script>
@@ -17,7 +17,7 @@
   </script>
   <body>
     <div class="example" id="rwmutex">
-      <h2><a href="./">Go by Example</a>: RWMutex</h2>
+      <h2><a href="./">Go by Example</a>: sync.RWMutex</h2>
       
       <table>
         

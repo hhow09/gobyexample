@@ -1,6 +1,8 @@
+# default: name will be parsed to ID
+# custom: name | ID
 Arrays
 Slices
 Select
-Http RoundTripper
-Http Trace
-RWMutex
+http.RoundTripper | http-roundtripper
+http/httptrace | http-trace
+sync.RWMutex | rwmutex
