@@ -20,3 +20,6 @@
 ## DBs
 1. [Awesome Go Storage](https://github.com/gostor/awesome-go-storage)
 2. [Popular Database Implementations in Go](https://www.linkedin.com/pulse/popular-database-implementations-go-kanan-rahimov/)
+
+## Interview
+- [shomali11/go-interview: Collection of Technical Interview Questions solved with Go](https://github.com/shomali11/go-interview)

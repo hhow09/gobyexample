@@ -2,6 +2,10 @@ name: test
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
+      - 'resources.md'  
+      - 'docs/**'
     branches: [ master ]
   pull_request:
     branches: [ master ]
