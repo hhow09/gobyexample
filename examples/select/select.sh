@@ -3,8 +3,6 @@
 $ time go run select.go 
 received one
 received two
-
-# Note that the total execution time is only ~2 seconds
-# since both the 1 and 2 second `Sleeps` execute
-# concurrently.
-real	0m2.245s
+random 01
+not receiving any value
+timeout!
