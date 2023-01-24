@@ -22,4 +22,5 @@ require (
 	github.com/aws/smithy-go v1.8.0 // indirect
 	github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964 // indirect
 	github.com/dlclark/regexp2 v1.2.0 // indirect
+	golang.org/x/sync v0.1.0 // indirect
 )
