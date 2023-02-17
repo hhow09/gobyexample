@@ -3,7 +3,7 @@
 Arrays
 Slices
 Select
-Inheritence with composition | inheritence-with-composition
+Inheritence (struct) | inheritence-struct
 encoding/json | encoding-json
 http.RoundTripper | http-roundtripper
 http/httptrace | http-trace

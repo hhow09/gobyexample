@@ -49,6 +49,7 @@ func (a Alien) eat() {
 	fmt.Println("nom nom")
 }
 
+// Use Interface to solve Parametric polymorphism
 // should accept AnimalInterface
 func dinnerTime(a CanEatInterface) {
 	fmt.Print("dinnerTime: ")
@@ -74,4 +75,5 @@ func main() {
 
 	al := Alien{}
 	dinnerTime(al)
+
 }

@@ -1,4 +1,4 @@
-go run examples/inheritence-with-composition.go
+go run examples/inheritence-struct.go
 
 mammal only eat maet, it belongs tocarnivorous
 meow only eat fish, it belongs tocat
