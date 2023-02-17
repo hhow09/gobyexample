@@ -9,6 +9,9 @@
 6. [深入Go语言之旅](https://go.cyub.vip/)
 7. [Go 语言设计与实现](https://draveness.me/golang/)
 
+## Books
+1. [Go in Action](https://www.manning.com/books/go-in-action)
+
 ## Design Patterns / Best Practice
 1. [Effective Go](https://go.dev/doc/effective_go)
 2. [awesome-patterns](https://crazybber.github.io/awesome-patterns/)

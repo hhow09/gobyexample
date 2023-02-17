@@ -4,34 +4,31 @@ package main
 
 import "fmt"
 
-type rect struct {
-	width, height int
+type user struct {
+	name  string
+	email string
 }
 
-// This `area` method has a _receiver type_ of `*rect`.
-func (r *rect) area() int {
-	return r.width * r.height
+// value receiver will only works on the copy of struct
+func (u user) notify() {
+	fmt.Printf("Sending email to %s<%s>\n", u.name, u.email)
+	// will not change because this method is a value receivere.
+	// warning: ineffective assignment to field user.name
+	u.name = "will not change"
 }
 
-// Methods can be defined for either pointer or value
-// receiver types. Here's an example of a value receiver.
-func (r rect) perim() int {
-	return 2*r.width + 2*r.height
+func (u *user) changeEmail(email string) {
+	// will de-reference to (*u).email under the hood
+	u.email = email
 }
 
 func main() {
-	r := rect{width: 10, height: 5}
-
-	// Here we call the 2 methods defined for our struct.
-	fmt.Println("area: ", r.area())
-	fmt.Println("perim:", r.perim())
-
-	// Go automatically handles conversion between values
-	// and pointers for method calls. You may want to use
-	// a pointer receiver type to avoid copying on method
-	// calls or to allow the method to mutate the
-	// receiving struct.
-	rp := &r
-	fmt.Println("area: ", rp.area())
-	fmt.Println("perim:", rp.perim())
+	ua := user{name: "Tom", email: "tom@gmail.com"}
+	ub := user{name: "Ben", email: "ben@gmail.com"}
+	ua.notify()
+	fmt.Println("ua.name", ua.name)
+	ua.changeEmail("tom@newdomain.com")
+	fmt.Println("ua.email", ua.email)
+	ub.changeEmail("ben@newdomain.com")
+	fmt.Println("ub.email", ub.email)
 }
