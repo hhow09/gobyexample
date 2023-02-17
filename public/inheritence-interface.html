@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Go by Example: Inheritence (interface)</title>
+    <link rel=stylesheet href="site.css">
+  </head>
+  <script>
+      onkeydown = (e) => {
+          
+          if (e.key == "ArrowLeft") {
+              window.location.href = 'inheritence-struct.html';
+          }
+          
+          
+          if (e.key == "ArrowRight") {
+              window.location.href = 'encoding-json.html';
+          }
+          
+      }
+  </script>
+  <body>
+    <div class="example" id="inheritence-interface">
+      <h2><a href="./">Go by Example</a>: Inheritence (interface)</h2>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            <a href="https://go.dev/play/p/YvckvypSf3P"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+          <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;fmt&#34;</span>
+<span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">PointType</span> <span class="kt">int</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">const</span> <span class="p">(</span>
+    <span class="nx">PointT</span> <span class="nx">PointType</span> <span class="p">=</span> <span class="kc">iota</span>
+    <span class="nx">Point3DT</span>
+<span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">IPoint</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">X</span><span class="p">()</span> <span class="kt">float64</span>
+    <span class="nf">Y</span><span class="p">()</span> <span class="kt">float64</span>
+    <span class="nf">SetX</span><span class="p">(</span><span class="kt">float64</span><span class="p">)</span>
+    <span class="nf">SetY</span><span class="p">(</span><span class="kt">float64</span><span class="p">)</span>
+    <span class="nf">GetX</span><span class="p">()</span> <span class="kt">float64</span>
+    <span class="nf">GetY</span><span class="p">()</span> <span class="kt">float64</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>embed IPoint in IPoint3D will inherit all method of IPoint</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">type</span> <span class="nx">IPoint3D</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">IPoint</span>
+    <span class="nf">Z</span><span class="p">()</span> <span class="kt">float64</span>
+    <span class="nf">SetZ</span><span class="p">(</span><span class="kt">float64</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">Point</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">x</span> <span class="kt">float64</span>
+    <span class="nx">y</span> <span class="kt">float64</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Point struct is embedded</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">Point3D</span> <span class="kd">struct</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">Point</span>
+    <span class="nx">z</span> <span class="kt">float64</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>factory pattern for multiple struct</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">NewPoint</span><span class="p">(</span><span class="nx">t</span> <span class="nx">PointType</span><span class="p">,</span> <span class="nx">args</span> <span class="o">...</span><span class="kt">float64</span><span class="p">)</span> <span class="nx">IPoint</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="nx">t</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nx">Point3DT</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">&amp;</span><span class="nx">Point3D</span><span class="p">{</span><span class="nx">Point</span><span class="p">:</span> <span class="nx">Point</span><span class="p">{</span><span class="nx">x</span><span class="p">:</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">y</span><span class="p">:</span> <span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]},</span> <span class="nx">z</span><span class="p">:</span> <span class="nx">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]}</span>
+    <span class="k">default</span><span class="p">:</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">        <span class="k">return</span> <span class="o">&amp;</span><span class="nx">Point</span><span class="p">{</span><span class="nx">x</span><span class="p">:</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">y</span><span class="p">:</span> <span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Point</span><span class="p">)</span> <span class="nf">X</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">x</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Point</span><span class="p">)</span> <span class="nf">Y</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">y</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Point</span><span class="p">)</span> <span class="nf">SetX</span><span class="p">(</span><span class="nx">x</span> <span class="kt">float64</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">x</span> <span class="p">=</span> <span class="nx">x</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Point</span><span class="p">)</span> <span class="nf">SetY</span><span class="p">(</span><span class="nx">y</span> <span class="kt">float64</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">y</span> <span class="p">=</span> <span class="nx">y</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Point</span><span class="p">)</span> <span class="nf">GetX</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">x</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Point</span><span class="p">)</span> <span class="nf">GetY</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">y</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Point3D</span><span class="p">)</span> <span class="nf">Z</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">z</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Point3D</span><span class="p">)</span> <span class="nf">SetZ</span><span class="p">(</span><span class="nx">z</span> <span class="kt">float64</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">z</span> <span class="p">=</span> <span class="nx">z</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>this implements polymorphism of slice</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">points</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="nx">IPoint</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">p1</span> <span class="o">:=</span> <span class="nf">NewPoint</span><span class="p">(</span><span class="nx">PointT</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="nx">p2</span> <span class="o">:=</span> <span class="nf">NewPoint</span><span class="p">(</span><span class="nx">Point3DT</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">points</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">points</span><span class="p">,</span> <span class="nx">p1</span><span class="p">,</span> <span class="nx">p2</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma">    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">p</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">points</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;(%.2f %.2f)\n&#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nf">GetX</span><span class="p">(),</span> <span class="nx">p</span><span class="p">.</span><span class="nf">GetY</span><span class="p">())</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="go">go run examples/inheritence-interface.go</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="go">(3.00 4.00)
+</span><span class="go">(1.00 2.00)</span></pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      
+      <p class="next">
+        Next example: <a href="encoding-json.html">encoding/json</a>.
+      </p>
+      
+
+    <p class="footer">
+      <a href="https://github.com/hhow09/gobyexample">source</a>
+      <br/>
+      Forked from <a href="https://gobyexample.com">Go by Example</a>
+    </p>
+
+    </div>
+    <script>
+      var codeLines = [];
+      codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"fmt\"\u000A)\u000A');codeLines.push('type PointType int\u000A');codeLines.push('const (\u000A    PointT PointType \u003D iota\u000A    Point3DT\u000A)\u000A');codeLines.push('type IPoint interface {\u000A    X() float64\u000A    Y() float64\u000A    SetX(float64)\u000A    SetY(float64)\u000A    GetX() float64\u000A    GetY() float64\u000A}\u000A');codeLines.push('type IPoint3D interface {\u000A    IPoint\u000A    Z() float64\u000A    SetZ(float64)\u000A}\u000A');codeLines.push('type Point struct {\u000A    x float64\u000A    y float64\u000A}\u000A');codeLines.push('type Point3D struct {\u000A');codeLines.push('    Point\u000A    z float64\u000A}\u000A');codeLines.push('func NewPoint(t PointType, args ...float64) IPoint {\u000A    switch t {\u000A    case Point3DT:\u000A        return \u0026Point3D{Point: Point{x: args[0], y: args[1]}, z: args[2]}\u000A    default:\u000A');codeLines.push('        return \u0026Point{x: args[0], y: args[1]}\u000A    }\u000A}\u000A');codeLines.push('func (p *Point) X() float64 {\u000A    return p.x\u000A}\u000A');codeLines.push('func (p *Point) Y() float64 {\u000A    return p.y\u000A}\u000A');codeLines.push('func (p *Point) SetX(x float64) {\u000A    p.x \u003D x\u000A}\u000A');codeLines.push('func (p *Point) SetY(y float64) {\u000A    p.y \u003D y\u000A}\u000A');codeLines.push('func (p *Point) GetX() float64 {\u000A    return p.x\u000A}\u000A');codeLines.push('func (p *Point) GetY() float64 {\u000A    return p.y\u000A}\u000A');codeLines.push('func (p *Point3D) Z() float64 {\u000A    return p.z\u000A}\u000A');codeLines.push('func (p *Point3D) SetZ(z float64) {\u000A    p.z \u003D z\u000A}\u000A');codeLines.push('func main() {\u000A');codeLines.push('    points :\u003D make([]IPoint, 0)\u000A');codeLines.push('    p1 :\u003D NewPoint(PointT, 3, 4)\u000A    p2 :\u003D NewPoint(Point3DT, 1, 2, 3)\u000A');codeLines.push('    points \u003D append(points, p1, p2)\u000A');codeLines.push('    for _, p :\u003D range points {\u000A        fmt.Printf(\"(%.2f %.2f)\\n\", p.GetX(), p.GetY())\u000A    }\u000A}\u000A');codeLines.push('');codeLines.push('');
+    </script>
+    <script src="site.js" async></script>
+  </body>
+</html>

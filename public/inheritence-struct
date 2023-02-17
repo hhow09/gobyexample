@@ -14,7 +14,7 @@
           
           
           if (e.key == "ArrowRight") {
-              window.location.href = 'encoding-json.html';
+              window.location.href = 'inheritence-interface.html';
           }
           
       }
@@ -356,7 +356,7 @@ should accept AnimalInterface</p>
       
       
       <p class="next">
-        Next example: <a href="encoding-json.html">encoding/json</a>.
+        Next example: <a href="inheritence-interface.html">Inheritence (interface)</a>.
       </p>
       
 
