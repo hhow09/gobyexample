@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Go by Example: Inheritence with composition</title>
+    <link rel=stylesheet href="site.css">
+  </head>
+  <script>
+      onkeydown = (e) => {
+          
+          if (e.key == "ArrowLeft") {
+              window.location.href = 'select.html';
+          }
+          
+          
+          if (e.key == "ArrowRight") {
+              window.location.href = 'encoding-json.html';
+          }
+          
+      }
+  </script>
+  <body>
+    <div class="example" id="inheritence-with-composition">
+      <h2><a href="./">Go by Example</a>: Inheritence with composition</h2>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            <a href="https://go.dev/play/p/HgSBN-EWXp_p"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+          <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;fmt&#34;</span>
+<span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Parent class</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">type</span> <span class="nx">Animal</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">name</span>    <span class="kt">string</span>
+    <span class="nx">subject</span> <span class="kt">string</span>
+    <span class="nx">food</span>    <span class="kt">string</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Child Class</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">type</span> <span class="nx">Cat</span> <span class="kd">struct</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>inherited from animal</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">Animal</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>member specific for cat</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">color</span> <span class="kt">string</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Child Class</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">type</span> <span class="nx">Fish</span> <span class="kd">struct</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>inherited from animal</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">Animal</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>member specific for Fish</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">length</span> <span class="kt">int</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>method specific for cat</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="nx">Cat</span><span class="p">)</span> <span class="nf">talk</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;my name is %s. and my color is %s\n&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">color</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>method for all Animal</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="nx">Animal</span><span class="p">)</span> <span class="nf">eat</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s">&#34; only eat &#34;</span> <span class="o">+</span> <span class="nx">a</span><span class="p">.</span><span class="nx">food</span> <span class="o">+</span> <span class="s">&#34;, it belongs to&#34;</span> <span class="o">+</span> <span class="nx">a</span><span class="p">.</span><span class="nx">subject</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>in practice, we usually use interface for abstraction</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">type</span> <span class="nx">CanEatInterface</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">eat</span><span class="p">()</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">Alien</span> <span class="kd">struct</span><span class="p">{}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Alien also implement CanEatInterface</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="nx">Alien</span><span class="p">)</span> <span class="nf">eat</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;nom nom&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>should accept AnimalInterface</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">dinnerTime</span><span class="p">(</span><span class="nx">a</span> <span class="nx">CanEatInterface</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;dinnerTime: &#34;</span><span class="p">)</span>
+    <span class="nx">a</span><span class="p">.</span><span class="nf">eat</span><span class="p">()</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>animal.eat()</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">a</span> <span class="o">:=</span> <span class="nx">Animal</span><span class="p">{</span><span class="nx">name</span><span class="p">:</span> <span class="s">&#34;mammal&#34;</span><span class="p">,</span> <span class="nx">subject</span><span class="p">:</span> <span class="s">&#34;carnivorous&#34;</span><span class="p">,</span> <span class="nx">food</span><span class="p">:</span> <span class="s">&#34;maet&#34;</span><span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">a</span><span class="p">.</span><span class="nf">eat</span><span class="p">()</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>declare Cat</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">cat</span> <span class="o">:=</span> <span class="nx">Cat</span><span class="p">{</span><span class="nx">Animal</span><span class="p">:</span> <span class="nx">Animal</span><span class="p">{</span><span class="nx">name</span><span class="p">:</span> <span class="s">&#34;meow&#34;</span><span class="p">,</span> <span class="nx">subject</span><span class="p">:</span> <span class="s">&#34;cat&#34;</span><span class="p">,</span> <span class="nx">food</span><span class="p">:</span> <span class="s">&#34;fish&#34;</span><span class="p">},</span> <span class="nx">color</span><span class="p">:</span> <span class="s">&#34;black&#34;</span><span class="p">}</span>
+    <span class="nx">cat</span><span class="p">.</span><span class="nf">eat</span><span class="p">()</span>
+    <span class="nx">cat</span><span class="p">.</span><span class="nf">talk</span><span class="p">()</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>declare Fish</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">fish</span> <span class="o">:=</span> <span class="nx">Fish</span><span class="p">{</span><span class="nx">Animal</span><span class="p">:</span> <span class="nx">Animal</span><span class="p">{</span><span class="nx">name</span><span class="p">:</span> <span class="s">&#34;blublu&#34;</span><span class="p">,</span> <span class="nx">subject</span><span class="p">:</span> <span class="s">&#34;deep ocean&#34;</span><span class="p">,</span> <span class="nx">food</span><span class="p">:</span> <span class="s">&#34;seeweed&#34;</span><span class="p">},</span> <span class="nx">length</span><span class="p">:</span> <span class="mi">6</span><span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nf">dinnerTime</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+    <span class="nf">dinnerTime</span><span class="p">(</span><span class="nx">cat</span><span class="p">)</span>
+    <span class="nf">dinnerTime</span><span class="p">(</span><span class="nx">fish</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma">    <span class="nx">al</span> <span class="o">:=</span> <span class="nx">Alien</span><span class="p">{}</span>
+    <span class="nf">dinnerTime</span><span class="p">(</span><span class="nx">al</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="go">go run examples/inheritence-with-composition.go</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="go">mammal only eat maet, it belongs tocarnivorous
+</span><span class="go">meow only eat fish, it belongs tocat
+</span><span class="go">my name is meow. and my color is black
+</span><span class="go">dinnerTime: mammal only eat maet, it belongs tocarnivorous
+</span><span class="go">dinnerTime: meow only eat fish, it belongs tocat
+</span><span class="go">dinnerTime: blublu only eat seeweed, it belongs todeep ocean
+</span><span class="go">dinnerTime: nom nom</span></pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      
+      <p class="next">
+        Next example: <a href="encoding-json.html">encoding/json</a>.
+      </p>
+      
+
+    <p class="footer">
+      <a href="https://github.com/hhow09/gobyexample">source</a>
+      <br/>
+      Forked from <a href="https://gobyexample.com">Go by Example</a>
+    </p>
+
+    </div>
+    <script>
+      var codeLines = [];
+      codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"fmt\"\u000A)\u000A');codeLines.push('type Animal struct {\u000A    name    string\u000A    subject string\u000A    food    string\u000A}\u000A');codeLines.push('type Cat struct {\u000A');codeLines.push('    Animal\u000A');codeLines.push('    color string\u000A}\u000A');codeLines.push('type Fish struct {\u000A');codeLines.push('    Animal\u000A');codeLines.push('    length int\u000A}\u000A');codeLines.push('func (c Cat) talk() {\u000A    fmt.Printf(\"my name is %s. and my color is %s\\n\", c.name, c.color)\u000A}\u000A');codeLines.push('func (a Animal) eat() {\u000A    fmt.Println(a.name + \" only eat \" + a.food + \", it belongs to\" + a.subject)\u000A}\u000A');codeLines.push('type CanEatInterface interface {\u000A    eat()\u000A}\u000A');codeLines.push('type Alien struct{}\u000A');codeLines.push('func (a Alien) eat() {\u000A    fmt.Println(\"nom nom\")\u000A}\u000A');codeLines.push('func dinnerTime(a CanEatInterface) {\u000A    fmt.Print(\"dinnerTime: \")\u000A    a.eat()\u000A}\u000A');codeLines.push('func main() {\u000A    a :\u003D Animal{name: \"mammal\", subject: \"carnivorous\", food: \"maet\"}\u000A');codeLines.push('    a.eat()\u000A');codeLines.push('    cat :\u003D Cat{Animal: Animal{name: \"meow\", subject: \"cat\", food: \"fish\"}, color: \"black\"}\u000A    cat.eat()\u000A    cat.talk()\u000A');codeLines.push('    fish :\u003D Fish{Animal: Animal{name: \"blublu\", subject: \"deep ocean\", food: \"seeweed\"}, length: 6}\u000A');codeLines.push('    dinnerTime(a)\u000A    dinnerTime(cat)\u000A    dinnerTime(fish)\u000A');codeLines.push('    al :\u003D Alien{}\u000A    dinnerTime(al)\u000A}\u000A');codeLines.push('');codeLines.push('');
+    </script>
+    <script src="site.js" async></script>
+  </body>
+</html>
