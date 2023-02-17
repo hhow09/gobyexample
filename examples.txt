@@ -3,6 +3,7 @@
 Arrays
 Slices
 Select
+encoding/json | encoding-json
 http.RoundTripper | http-roundtripper
 http/httptrace | http-trace
 sync.RWMutex | rwmutex
