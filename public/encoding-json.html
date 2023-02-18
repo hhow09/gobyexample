@@ -41,7 +41,7 @@
             
           </td>
           <td class="code leading">
-            <a href="https://go.dev/play/p/ih-Fhatxp_d"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+            <a href="https://go.dev/play/p/21RvbZhixjQ"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
           <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
 </pre>
           </td>
@@ -102,6 +102,22 @@
     <span class="nx">Capacity</span> <span class="kt">int</span>       <span class="s">`json:&#34;capacity&#34;`</span>
     <span class="nx">Time</span>     <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span> <span class="s">`json:&#34;time&#34;`</span>
 <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">J</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">a</span> <span class="kt">string</span> <span class="c1">// lowercase , no tag ==&gt; cannot marshall
+</span><span class="c1"></span>    <span class="c1">//b string `json:&#34;B&#34;` // lowercase +tag ==&gt; struct field b has json tag but is not exported
+</span><span class="c1"></span>    <span class="nx">C</span> <span class="kt">string</span> <span class="c1">// Uppercase, no tag ==&gt; marshall as key
+</span><span class="c1"></span>    <span class="nx">D</span> <span class="kt">string</span> <span class="s">`json:&#34;DD&#34;`</span> <span class="c1">// Uppercase + tag ==&gt; marshall as tag
+</span><span class="c1"></span><span class="p">}</span>
 </pre>
           </td>
         </tr>
@@ -364,14 +380,37 @@
 </ol>
 
           </td>
-          <td class="code">
+          <td class="code leading">
             
           <pre class="chroma">
     <span class="nx">enc</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">)</span> <span class="c1">// write to stdout
 </span><span class="c1"></span>    <span class="nx">d</span> <span class="o">:=</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="s">&#34;apple&#34;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s">&#34;lettuce&#34;</span><span class="p">:</span> <span class="mi">7</span><span class="p">}</span>
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;4. encode to writer: &#34;</span><span class="p">)</span>
     <span class="nx">enc</span><span class="p">.</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
-<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <ol>
+<li>with or without tag</li>
+</ol>
+
+          </td>
+          <td class="code">
+            
+          <pre class="chroma">
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;5. with or without tag&#34;</span><span class="p">)</span>
+    <span class="nx">j</span> <span class="o">:=</span> <span class="nx">J</span><span class="p">{</span>
+        <span class="nx">a</span><span class="p">:</span> <span class="s">&#34;1&#34;</span><span class="p">,</span>
+        <span class="nx">C</span><span class="p">:</span> <span class="s">&#34;3&#34;</span><span class="p">,</span>
+        <span class="nx">D</span><span class="p">:</span> <span class="s">&#34;4&#34;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;j = %+v\n&#34;</span><span class="p">,</span> <span class="nx">j</span><span class="p">)</span> <span class="c1">// {a:1 C:3 D:4}
+</span><span class="c1"></span>    <span class="nx">jsonInfo</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">j</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;jsonInfo = %+v\n&#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">jsonInfo</span><span class="p">))</span> <span class="c1">// &#34;{&#34;C&#34;:&#34;3&#34;,&#34;DD&#34;:&#34;4&#34;}&#34;
+</span><span class="c1"></span><span class="p">}</span>
 </pre>
           </td>
         </tr>
@@ -415,7 +454,10 @@
 </span><span class="go">{battery sensor 40 2019-01-21 19:07:28 +0000 UTC}
 </span><span class="go">time field in milli 1548097648000
 </span><span class="go">4. encode to writer: 
-</span><span class="go">{&#34;apple&#34;:5,&#34;lettuce&#34;:7}</span></pre>
+</span><span class="go">{&#34;apple&#34;:5,&#34;lettuce&#34;:7}
+</span><span class="go">5. with or without tag
+</span><span class="go">j = {a:1 C:3 D:4}
+</span><span class="go">jsonInfo = {&#34;C&#34;:&#34;3&#34;,&#34;DD&#34;:&#34;4&#34;}</span></pre>
           </td>
         </tr>
         
@@ -436,7 +478,7 @@
     </div>
     <script>
       var codeLines = [];
-      codeLines.push('//ref: https://gobyexample.com/json\u000A');codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"encoding/json\"\u000A    \"fmt\"\u000A    \"os\"\u000A    \"time\"\u000A)\u000A');codeLines.push('type response1 struct {\u000A    Page   int\u000A    Fruits []string\u000A}\u000A');codeLines.push('type response2 struct {\u000A    Page   int      `json:\"page\"`\u000A    Fruits []string `json:\"fruits\"`\u000A}\u000A');codeLines.push('type response3 struct {\u000A    Name     string    `json:\"name\"`\u000A    Capacity int       `json:\"capacity\"`\u000A    Time     time.Time `json:\"time\"`\u000A}\u000A');codeLines.push('func main() {\u000A');codeLines.push('    bolB, _ :\u003D json.Marshal(true)\u000A    fmt.Println(\"true marshalled: \", string(bolB))\u000A');codeLines.push('    intB, _ :\u003D json.Marshal(1)\u000A    fmt.Println(\"int 1 marshalled: \", string(intB))\u000A');codeLines.push('    fltB, _ :\u003D json.Marshal(2.34)\u000A    fmt.Printf(\"float %f marshalled: %s\\n\", 2.34, string(fltB))\u000A');codeLines.push('    strB, _ :\u003D json.Marshal(\"gopher\")\u000A    fmt.Println(\"gopher marshelled\", strB)\u000A');codeLines.push('    slcD :\u003D []string{\"apple\", \"peach\", \"pear\"}\u000A    slcB, _ :\u003D json.Marshal(slcD)\u000A    fmt.Println(\"slcD\", string(slcB))\u000A');codeLines.push('    mapD :\u003D map[string]int{\"apple\": 5, \"lettuce\": 7}\u000A    mapB, _ :\u003D json.Marshal(mapD)\u000A    fmt.Println(\"mapD\", string(mapB))\u000A');codeLines.push('    res1D :\u003D \u0026response1{\u000A        Page:   1,\u000A        Fruits: []string{\"apple\", \"peach\", \"pear\"}}\u000A    res1B, _ :\u003D json.Marshal(res1D)\u000A    fmt.Println(\"res1D\", string(res1B))\u000A');codeLines.push('    res2D :\u003D \u0026response2{\u000A        Page:   1,\u000A        Fruits: []string{\"apple\", \"peach\", \"pear\"}}\u000A    res2B, _ :\u003D json.Marshal(res2D)\u000A    fmt.Println(\"res2B\", string(res2B))\u000A');codeLines.push('    fmt.Println(\"\u003D\u003D\u003D json.Unmarshal \u003D\u003D\u003D \")\u000A    rawstr :\u003D `{\"num\":6.13,\"strs\":[\"a\",\"b\"]}`\u000A    byt :\u003D []byte(rawstr)\u000A');codeLines.push('    var dat map[string]interface{}\u000A');codeLines.push('    if err :\u003D json.Unmarshal(byt, \u0026dat); err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    fmt.Printf(\"raw json: %s, unmarsheled to: %v\\n\", rawstr, dat)\u000A');codeLines.push('    num :\u003D dat[\"num\"].(float64)\u000A    fmt.Println(num)\u000A');codeLines.push('    strs :\u003D dat[\"strs\"].([]interface{})\u000A    str1 :\u003D strs[0].(string)\u000A    fmt.Println(str1)\u000A');codeLines.push('    jsonStr :\u003D `{\"page\": 1, \"fruits\": [\"apple\", \"peach\"], \"will\": \"ignore\"}`\u000A    res :\u003D response2{}\u000A    json.Unmarshal([]byte(jsonStr), \u0026res)\u000A');codeLines.push('    fmt.Printf(\"unmarshel raw json: %s to struct: \\n%v\", jsonStr, res)\u000A    fmt.Println(res.Fruits[0])\u000A');codeLines.push('    jsonStr \u003D `{\"name\": \"battery sensor\", \"capacity\": 40, \"time\": \"2019-01-21T19:07:28Z\"}`\u000A    data3 :\u003D response3{}\u000A    if err :\u003D json.Unmarshal([]byte(jsonStr), \u0026data3); err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    fmt.Printf(\"unmarshel raw json: %s to struct: \\n%v\\n\", jsonStr, data3)\u000A    fmt.Println(\"time field in milli\", data3.Time.UnixMilli())\u000A');codeLines.push('    enc :\u003D json.NewEncoder(os.Stdout) // write to stdout\u000A    d :\u003D map[string]int{\"apple\": 5, \"lettuce\": 7}\u000A    fmt.Println(\"4. encode to writer: \")\u000A    enc.Encode(d)\u000A}\u000A');codeLines.push('');codeLines.push('');
+      codeLines.push('//ref: https://gobyexample.com/json\u000A');codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"encoding/json\"\u000A    \"fmt\"\u000A    \"os\"\u000A    \"time\"\u000A)\u000A');codeLines.push('type response1 struct {\u000A    Page   int\u000A    Fruits []string\u000A}\u000A');codeLines.push('type response2 struct {\u000A    Page   int      `json:\"page\"`\u000A    Fruits []string `json:\"fruits\"`\u000A}\u000A');codeLines.push('type response3 struct {\u000A    Name     string    `json:\"name\"`\u000A    Capacity int       `json:\"capacity\"`\u000A    Time     time.Time `json:\"time\"`\u000A}\u000A');codeLines.push('type J struct {\u000A    a string // lowercase , no tag \u003D\u003D\u003E cannot marshall\u000A    //b string `json:\"B\"` // lowercase +tag \u003D\u003D\u003E struct field b has json tag but is not exported\u000A    C string // Uppercase, no tag \u003D\u003D\u003E marshall as key\u000A    D string `json:\"DD\"` // Uppercase + tag \u003D\u003D\u003E marshall as tag\u000A}\u000A');codeLines.push('func main() {\u000A');codeLines.push('    bolB, _ :\u003D json.Marshal(true)\u000A    fmt.Println(\"true marshalled: \", string(bolB))\u000A');codeLines.push('    intB, _ :\u003D json.Marshal(1)\u000A    fmt.Println(\"int 1 marshalled: \", string(intB))\u000A');codeLines.push('    fltB, _ :\u003D json.Marshal(2.34)\u000A    fmt.Printf(\"float %f marshalled: %s\\n\", 2.34, string(fltB))\u000A');codeLines.push('    strB, _ :\u003D json.Marshal(\"gopher\")\u000A    fmt.Println(\"gopher marshelled\", strB)\u000A');codeLines.push('    slcD :\u003D []string{\"apple\", \"peach\", \"pear\"}\u000A    slcB, _ :\u003D json.Marshal(slcD)\u000A    fmt.Println(\"slcD\", string(slcB))\u000A');codeLines.push('    mapD :\u003D map[string]int{\"apple\": 5, \"lettuce\": 7}\u000A    mapB, _ :\u003D json.Marshal(mapD)\u000A    fmt.Println(\"mapD\", string(mapB))\u000A');codeLines.push('    res1D :\u003D \u0026response1{\u000A        Page:   1,\u000A        Fruits: []string{\"apple\", \"peach\", \"pear\"}}\u000A    res1B, _ :\u003D json.Marshal(res1D)\u000A    fmt.Println(\"res1D\", string(res1B))\u000A');codeLines.push('    res2D :\u003D \u0026response2{\u000A        Page:   1,\u000A        Fruits: []string{\"apple\", \"peach\", \"pear\"}}\u000A    res2B, _ :\u003D json.Marshal(res2D)\u000A    fmt.Println(\"res2B\", string(res2B))\u000A');codeLines.push('    fmt.Println(\"\u003D\u003D\u003D json.Unmarshal \u003D\u003D\u003D \")\u000A    rawstr :\u003D `{\"num\":6.13,\"strs\":[\"a\",\"b\"]}`\u000A    byt :\u003D []byte(rawstr)\u000A');codeLines.push('    var dat map[string]interface{}\u000A');codeLines.push('    if err :\u003D json.Unmarshal(byt, \u0026dat); err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    fmt.Printf(\"raw json: %s, unmarsheled to: %v\\n\", rawstr, dat)\u000A');codeLines.push('    num :\u003D dat[\"num\"].(float64)\u000A    fmt.Println(num)\u000A');codeLines.push('    strs :\u003D dat[\"strs\"].([]interface{})\u000A    str1 :\u003D strs[0].(string)\u000A    fmt.Println(str1)\u000A');codeLines.push('    jsonStr :\u003D `{\"page\": 1, \"fruits\": [\"apple\", \"peach\"], \"will\": \"ignore\"}`\u000A    res :\u003D response2{}\u000A    json.Unmarshal([]byte(jsonStr), \u0026res)\u000A');codeLines.push('    fmt.Printf(\"unmarshel raw json: %s to struct: \\n%v\", jsonStr, res)\u000A    fmt.Println(res.Fruits[0])\u000A');codeLines.push('    jsonStr \u003D `{\"name\": \"battery sensor\", \"capacity\": 40, \"time\": \"2019-01-21T19:07:28Z\"}`\u000A    data3 :\u003D response3{}\u000A    if err :\u003D json.Unmarshal([]byte(jsonStr), \u0026data3); err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    fmt.Printf(\"unmarshel raw json: %s to struct: \\n%v\\n\", jsonStr, data3)\u000A    fmt.Println(\"time field in milli\", data3.Time.UnixMilli())\u000A');codeLines.push('    enc :\u003D json.NewEncoder(os.Stdout) // write to stdout\u000A    d :\u003D map[string]int{\"apple\": 5, \"lettuce\": 7}\u000A    fmt.Println(\"4. encode to writer: \")\u000A    enc.Encode(d)\u000A');codeLines.push('    fmt.Println(\"5. with or without tag\")\u000A    j :\u003D J{\u000A        a: \"1\",\u000A        C: \"3\",\u000A        D: \"4\",\u000A    }\u000A    fmt.Printf(\"j \u003D %+v\\n\", j) // {a:1 C:3 D:4}\u000A    jsonInfo, _ :\u003D json.Marshal(j)\u000A    fmt.Printf(\"jsonInfo \u003D %+v\\n\", string(jsonInfo)) // \"{\"C\":\"3\",\"DD\":\"4\"}\"\u000A}\u000A');codeLines.push('');codeLines.push('');
     </script>
     <script src="site.js" async></script>
   </body>

@@ -20,3 +20,6 @@ unmarshel raw json:
 time field in milli 1548097648000
 4. encode to writer: 
 {"apple":5,"lettuce":7}
+5. with or without tag
+j = {a:1 C:3 D:4}
+jsonInfo = {"C":"3","DD":"4"}

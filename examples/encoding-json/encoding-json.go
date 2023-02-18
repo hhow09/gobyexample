@@ -25,6 +25,13 @@ type response3 struct {
 	Time     time.Time `json:"time"`
 }
 
+type J struct {
+	a string // lowercase , no tag ==> cannot marshall
+	//b string `json:"B"` // lowercase +tag ==> struct field b has json tag but is not exported
+	C string // Uppercase, no tag ==> marshall as key
+	D string `json:"DD"` // Uppercase + tag ==> marshall as tag
+}
+
 func main() {
 	// marshell boolean -> []byte
 	bolB, _ := json.Marshal(true)
@@ -109,4 +116,15 @@ func main() {
 	d := map[string]int{"apple": 5, "lettuce": 7}
 	fmt.Println("4. encode to writer: ")
 	enc.Encode(d)
+
+	// 5. with or without tag
+	fmt.Println("5. with or without tag")
+	j := J{
+		a: "1",
+		C: "3",
+		D: "4",
+	}
+	fmt.Printf("j = %+v\n", j) // {a:1 C:3 D:4}
+	jsonInfo, _ := json.Marshal(j)
+	fmt.Printf("jsonInfo = %+v\n", string(jsonInfo)) // "{"C":"3","DD":"4"}"
 }
