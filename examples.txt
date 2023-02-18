@@ -13,3 +13,4 @@ http.RoundTripper | http-roundtripper
 http/httptrace | http-trace
 sync.RWMutex | rwmutex
 sync.singleflight | sync-singleflight
+Pattern: Singleton | pattern-singleton

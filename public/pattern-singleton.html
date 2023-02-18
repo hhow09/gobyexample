@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Go by Example: Pattern: Singleton</title>
+    <link rel=stylesheet href="site.css">
+  </head>
+  <script>
+      onkeydown = (e) => {
+          
+          if (e.key == "ArrowLeft") {
+              window.location.href = 'sync-singleflight.html';
+          }
+          
+          
+      }
+  </script>
+  <body>
+    <div class="example" id="pattern-singleton">
+      <h2><a href="./">Go by Example</a>: Pattern: Singleton</h2>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            <p>3 ways of singleton pattern</p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            <a href="https://go.dev/play/p/m0ypPJZXPYT"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+          <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;sync&#34;</span>
+<span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">singleton</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">a</span> <span class="kt">int</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">var</span> <span class="nx">instance</span> <span class="o">*</span><span class="nx">singleton</span>
+<span class="kd">var</span> <span class="nx">mu</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>1) singleton pattern <br/>
+not thread safe</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">GetInstance</span><span class="p">()</span> <span class="o">*</span><span class="nx">singleton</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">instance</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">instance</span> <span class="p">=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">singleton</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">instance</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>2) thread safe with lock  <br/>
+check -&gt; lock -&gt; check to reduce the lock access</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">GetInstanceThreadSafe</span><span class="p">()</span> <span class="o">*</span><span class="nx">singleton</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">instance</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">mu</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+        <span class="k">defer</span> <span class="nx">mu</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nx">instance</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">instance</span> <span class="p">=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">singleton</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">instance</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Once is an object that will perform exactly one action.</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">var</span> <span class="nx">once</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">Once</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>3) singleton with once.Do</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">GetInstanceThreadSafe2</span><span class="p">()</span> <span class="o">*</span><span class="nx">singleton</span> <span class="p">{</span>
+    <span class="nx">once</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">instance</span> <span class="p">=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">singleton</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="nx">instance</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">i1</span> <span class="o">:=</span> <span class="nf">GetInstance</span><span class="p">()</span>
+    <span class="nx">i2</span> <span class="o">:=</span> <span class="nf">GetInstance</span><span class="p">()</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%p, %p, equal ? %v\n&#34;</span><span class="p">,</span> <span class="nx">i1</span><span class="p">,</span> <span class="nx">i2</span><span class="p">,</span> <span class="nx">i1</span> <span class="o">==</span> <span class="nx">i2</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;GetInstanceThreadSafe&#34;</span><span class="p">)</span>
+    <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">p</span> <span class="o">:=</span> <span class="nf">GetInstanceThreadSafe</span><span class="p">()</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%p &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span>
+            <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+        <span class="p">}()</span>
+    <span class="p">}</span>
+    <span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">instance</span> <span class="p">=</span> <span class="kc">nil</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;GetInstanceThreadSafe2&#34;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">p</span> <span class="o">:=</span> <span class="nf">GetInstanceThreadSafe2</span><span class="p">()</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%p &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span>
+            <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+        <span class="p">}()</span>
+    <span class="p">}</span>
+    <span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>ref: <a href="https://blog.kennycoder.io/2021/08/22/Golang-Singleton-%E5%AF%A6%E7%8F%BE%E6%96%B9%E5%BC%8F%E6%8E%A2%E8%A8%8E/">https://blog.kennycoder.io/2021/08/22/Golang-Singleton-%E5%AF%A6%E7%8F%BE%E6%96%B9%E5%BC%8F%E6%8E%A2%E8%A8%8E/</a></p>
+
+          </td>
+          <td class="code empty">
+            
+          
+          </td>
+        </tr>
+        
+      </table>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="gp">$</span> go run pattern-singleton.go</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="go">0x140000a4008, 0x140000a4008, equal ? true
+</span><span class="go">GetInstanceThreadSafe
+</span><span class="go">0x140000a4008 0x140000a4008 0x140000a4008 0x140000a4008 0x140000a4008 
+</span><span class="go">GetInstanceThreadSafe2
+</span><span class="go">0x14000104010 0x14000104010 0x14000104010 0x14000104010 0x14000104010</span></pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      
+
+    <p class="footer">
+      <a href="https://github.com/hhow09/gobyexample">source</a>
+      <br/>
+      Forked from <a href="https://gobyexample.com">Go by Example</a>
+    </p>
+
+    </div>
+    <script>
+      var codeLines = [];
+      codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"fmt\"\u000A    \"sync\"\u000A)\u000A');codeLines.push('type singleton struct {\u000A    a int\u000A}\u000A');codeLines.push('var instance *singleton\u000Avar mu sync.Mutex\u000A');codeLines.push('func GetInstance() *singleton {\u000A    if instance \u003D\u003D nil {\u000A        instance \u003D new(singleton)\u000A    }\u000A    return instance\u000A}\u000A');codeLines.push('func GetInstanceThreadSafe() *singleton {\u000A    if instance \u003D\u003D nil {\u000A        mu.Lock()\u000A        defer mu.Unlock()\u000A        if instance \u003D\u003D nil {\u000A            instance \u003D new(singleton)\u000A        }\u000A    }\u000A    return instance\u000A}\u000A');codeLines.push('var once sync.Once\u000A');codeLines.push('func GetInstanceThreadSafe2() *singleton {\u000A    once.Do(func() {\u000A        instance \u003D new(singleton)\u000A    })\u000A    return instance\u000A}\u000A');codeLines.push('func main() {\u000A    i1 :\u003D GetInstance()\u000A    i2 :\u003D GetInstance()\u000A    fmt.Printf(\"%p, %p, equal ? %v\\n\", i1, i2, i1 \u003D\u003D i2)\u000A');codeLines.push('    fmt.Println(\"GetInstanceThreadSafe\")\u000A    var wg sync.WaitGroup\u000A    for i :\u003D 0; i \u003C 5; i++ {\u000A        wg.Add(1)\u000A        go func() {\u000A            p :\u003D GetInstanceThreadSafe()\u000A            fmt.Printf(\"%p \", p)\u000A            wg.Done()\u000A        }()\u000A    }\u000A    wg.Wait()\u000A');codeLines.push('    instance \u003D nil\u000A    fmt.Println(\"\")\u000A    fmt.Println(\"GetInstanceThreadSafe2\")\u000A    for i :\u003D 0; i \u003C 5; i++ {\u000A        wg.Add(1)\u000A        go func() {\u000A            p :\u003D GetInstanceThreadSafe2()\u000A            fmt.Printf(\"%p \", p)\u000A            wg.Done()\u000A        }()\u000A    }\u000A    wg.Wait()\u000A}\u000A');codeLines.push('');codeLines.push('');codeLines.push('');
+    </script>
+    <script src="site.js" async></script>
+  </body>
+</html>
