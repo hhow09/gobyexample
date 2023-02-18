@@ -14,7 +14,7 @@
           
           
           if (e.key == "ArrowRight") {
-              window.location.href = 'encoding-json.html';
+              window.location.href = 'channel-merge.html';
           }
           
       }
@@ -178,7 +178,7 @@ warning: ineffective assignment to field user.name</p>
       
       
       <p class="next">
-        Next example: <a href="encoding-json.html">encoding/json</a>.
+        Next example: <a href="channel-merge.html">Channel: Merge</a>.
       </p>
       
 
