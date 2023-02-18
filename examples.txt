@@ -7,6 +7,7 @@ Inheritence (struct) | inheritence-struct
 Inheritence (interface) | inheritence-interface
 Generics
 Methods | methods
+Channel: Merge | channel-merge
 encoding/json | encoding-json
 http.RoundTripper | http-roundtripper
 http/httptrace | http-trace
