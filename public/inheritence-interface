@@ -14,7 +14,7 @@
           
           
           if (e.key == "ArrowRight") {
-              window.location.href = 'encoding-json.html';
+              window.location.href = 'methods.html';
           }
           
       }
@@ -372,7 +372,7 @@
       
       
       <p class="next">
-        Next example: <a href="encoding-json.html">encoding/json</a>.
+        Next example: <a href="methods.html">Methods</a>.
       </p>
       
 
