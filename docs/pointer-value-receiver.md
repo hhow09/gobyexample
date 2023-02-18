@@ -3,8 +3,9 @@
 ## Overview
 - Value method is called with a copy (on stack) of the caller's argument.
 - Pointer receiver passes the address of a type to the function.
+- see example in `Appendix 1 - Pointer Receiver v.s. Value Receiver`
 
-## Should I define methods on values or pointers?
+## Var: Should I define methods on values or pointers?
 Whether to define the receiver as a value or as a pointer is the same question, then, as whether a function argument should be a value or a pointer. There are several considerations.
 
 1. Modify: If the method need to modify the receiver, receiver must be a **pointer**.
@@ -59,12 +60,72 @@ type slice struct {
 }
 ```
 
-## Method Sets
+## Interfaces
+[Example: Interface pointer-vs-value-receiver](https://github.com/agronskiy/golang-episodes/tree/main/pointer-vs-value-receiver)
+
+### Method Set
 given type T
 - the method set of type T consists of all methods with receiver type T
 - the method set of type *T consists of all methods with receiver *T or T
 
+| Method receiver type | On what objects can be called via interface |
+|----------------------|---------------------------------------------|
+| T                    | both T and *T                               |
+| *T                   | only *T                                     |
+
+pass value `T` (with pointer receiver `pointerMethod`) that accepct `PointerMethodCaller` interface will not compile
+
+### Reason
+-  interfaces were to be a lightweight structure holding (along with type information) a pointer to the actual variable.
+- interface always holds a copy, hence calling pointer method on a copy does not make much sense for the purposes of modifying the original caller.
+- there is no safe way for a method call to obtain a pointer
+
+
+```go
+var iface interface{} = (int32)(0)
+// This takes address of the value. Unsafe but works. Not guaranteed to work
+// after possible implementation change!
+var px uintptr = (*[2]uintptr)(unsafe.Pointer(&iface))[1]
+
+iface = (int32)(1)
+var py uintptr = (*[2]uintptr)(unsafe.Pointer(&iface))[1]
+
+fmt.Printf("First pointer %#v,  second pointer %#v", px, py)
+//First pointer 0x10f00fc,  second pointer 0x10f0100
+```
+
+## Appendix 1 - Pointer Receiver v.s. Value Receiver
+```go
+package main
+
+import "fmt"
+
+type T struct{}
+
+var (
+	val     T  = T{}
+	pointer *T = &val
+)
+
+// Pointer type receiver
+func (receiver *T) pointerMethod() {
+	fmt.Printf("Pointer method called on \t%#v with address %p\n\n", *receiver, receiver)
+}
+
+// Value type receiver
+func (receiver T) valueMethod() {
+	fmt.Printf("Value method called on \t%#v with address %p\n\n", receiver, &receiver)
+}
+
+func main() {
+	fmt.Printf("Value created \t%#v with address %p\n", val, &val)
+	fmt.Printf("Pointer created on \t%#v with address %p\n", *pointer, pointer)
+	val.valueMethod()
+	pointer.pointerMethod()
+}
+```
+
 ## Reference
 - [Should I define methods on values or pointers?](https://go.dev/doc/faq#methods_on_values_or_pointers)
 - [Stackoverflow: Value receiver vs. pointer receiver](https://stackoverflow.com/questions/27775376/value-receiver-vs-pointer-receiver)
-- https://medium.com/globant/go-method-receiver-pointer-vs-value-ffc5ab7acdb
+- [Summary to the difference between T and T* method sets in Go](https://gronskiy.com/posts/2020-04-golang-pointer-vs-value-methods/)
