@@ -5,6 +5,7 @@ Slices
 Select
 Inheritence (struct) | inheritence-struct
 Inheritence (interface) | inheritence-interface
+Methods | methods
 encoding/json | encoding-json
 http.RoundTripper | http-roundtripper
 http/httptrace | http-trace

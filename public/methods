@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Go by Example: Methods</title>
+    <link rel=stylesheet href="site.css">
+  </head>
+  <script>
+      onkeydown = (e) => {
+          
+          if (e.key == "ArrowLeft") {
+              window.location.href = 'inheritence-interface.html';
+          }
+          
+          
+          if (e.key == "ArrowRight") {
+              window.location.href = 'encoding-json.html';
+          }
+          
+      }
+  </script>
+  <body>
+    <div class="example" id="methods">
+      <h2><a href="./">Go by Example</a>: Methods</h2>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            <p>Go supports <em>methods</em> defined on struct types.</p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>see <a href="https://github.com/hhow09/gobyexample/blob/master/docs/pointer-value-receiver.md">pointer vs. value receiver</a></p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            <a href="https://go.dev/play/p/K2XOOc3KXLv"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+          <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">user</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">name</span>  <span class="kt">string</span>
+    <span class="nx">email</span> <span class="kt">string</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>value receiver will only works on the copy of struct</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="p">(</span><span class="nx">u</span> <span class="nx">user</span><span class="p">)</span> <span class="nf">notify</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Sending email to %s&lt;%s&gt;\n&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">email</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>will not change because this method is a value receivere.
+warning: ineffective assignment to field user.name</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">u</span><span class="p">.</span><span class="nx">name</span> <span class="p">=</span> <span class="s">&#34;will not change&#34;</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>will de-reference to (*u).email under the hood</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">u</span> <span class="o">*</span><span class="nx">user</span><span class="p">)</span> <span class="nf">changeEmail</span><span class="p">(</span><span class="nx">email</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">u</span><span class="p">.</span><span class="nx">email</span> <span class="p">=</span> <span class="nx">email</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">ua</span> <span class="o">:=</span> <span class="nx">user</span><span class="p">{</span><span class="nx">name</span><span class="p">:</span> <span class="s">&#34;Tom&#34;</span><span class="p">,</span> <span class="nx">email</span><span class="p">:</span> <span class="s">&#34;tom@gmail.com&#34;</span><span class="p">}</span>
+    <span class="nx">ub</span> <span class="o">:=</span> <span class="nx">user</span><span class="p">{</span><span class="nx">name</span><span class="p">:</span> <span class="s">&#34;Ben&#34;</span><span class="p">,</span> <span class="nx">email</span><span class="p">:</span> <span class="s">&#34;ben@gmail.com&#34;</span><span class="p">}</span>
+    <span class="nx">ua</span><span class="p">.</span><span class="nf">notify</span><span class="p">()</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;ua.name&#34;</span><span class="p">,</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span>
+    <span class="nx">ua</span><span class="p">.</span><span class="nf">changeEmail</span><span class="p">(</span><span class="s">&#34;tom@newdomain.com&#34;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;ua.email&#34;</span><span class="p">,</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">email</span><span class="p">)</span>
+    <span class="nx">ub</span><span class="p">.</span><span class="nf">changeEmail</span><span class="p">(</span><span class="s">&#34;ben@newdomain.com&#34;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;ub.email&#34;</span><span class="p">,</span> <span class="nx">ub</span><span class="p">.</span><span class="nx">email</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="gp">$</span> go run methods.go 
+<span class="go">Sending email to Tom&lt;tom@gmail.com&gt;
+</span><span class="go">ua.name Tom
+</span><span class="go">ua.email tom@newdomain.com
+</span><span class="go">ub.email ben@newdomain.com</span></pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      
+      <p class="next">
+        Next example: <a href="encoding-json.html">encoding/json</a>.
+      </p>
+      
+
+    <p class="footer">
+      <a href="https://github.com/hhow09/gobyexample">source</a>
+      <br/>
+      Forked from <a href="https://gobyexample.com">Go by Example</a>
+    </p>
+
+    </div>
+    <script>
+      var codeLines = [];
+      codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import \"fmt\"\u000A');codeLines.push('type user struct {\u000A    name  string\u000A    email string\u000A}\u000A');codeLines.push('func (u user) notify() {\u000A    fmt.Printf(\"Sending email to %s\u003C%s\u003E\\n\", u.name, u.email)\u000A');codeLines.push('    u.name \u003D \"will not change\"\u000A}\u000A');codeLines.push('func (u *user) changeEmail(email string) {\u000A');codeLines.push('    u.email \u003D email\u000A}\u000A');codeLines.push('func main() {\u000A    ua :\u003D user{name: \"Tom\", email: \"tom@gmail.com\"}\u000A    ub :\u003D user{name: \"Ben\", email: \"ben@gmail.com\"}\u000A    ua.notify()\u000A    fmt.Println(\"ua.name\", ua.name)\u000A    ua.changeEmail(\"tom@newdomain.com\")\u000A    fmt.Println(\"ua.email\", ua.email)\u000A    ub.changeEmail(\"ben@newdomain.com\")\u000A    fmt.Println(\"ub.email\", ub.email)\u000A}\u000A');codeLines.push('');
+    </script>
+    <script src="site.js" async></script>
+  </body>
+</html>

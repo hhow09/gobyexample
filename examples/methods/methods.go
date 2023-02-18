@@ -1,5 +1,7 @@
 // Go supports _methods_ defined on struct types.
 
+// see [pointer vs. value receiver](https://github.com/hhow09/gobyexample/blob/master/docs/pointer-value-receiver.md)
+
 package main
 
 import "fmt"
