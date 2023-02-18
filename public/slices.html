@@ -54,7 +54,7 @@ of the segment, and its capacity (the maximum length of the segment).</p>
             
           </td>
           <td class="code leading">
-            <a href="https://go.dev/play/p/L3EyNeTnzj-"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+            <a href="https://go.dev/play/p/yRwN0EusMxB"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
           <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
 </pre>
           </td>
@@ -190,8 +190,8 @@ underlying array: [3]int{1, 2, 3}</li>
           <td class="code leading">
             
           <pre class="chroma">
-    <span class="nx">s1</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
-    <span class="nx">b2</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s1</span><span class="p">))</span>
+    <span class="nx">s3</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="nx">b3</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s3</span><span class="p">))</span>
 </pre>
           </td>
         </tr>
@@ -204,8 +204,8 @@ underlying array: [3]int{1, 2, 3}</li>
           <td class="code leading">
             
           <pre class="chroma">
-    <span class="nb">copy</span><span class="p">(</span><span class="nx">b2</span><span class="p">,</span> <span class="nx">s1</span><span class="p">)</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;copy %v to new array %v\n&#34;</span><span class="p">,</span> <span class="nx">s1</span><span class="p">,</span> <span class="nx">b2</span><span class="p">)</span>
+    <span class="nb">copy</span><span class="p">(</span><span class="nx">b3</span><span class="p">,</span> <span class="nx">s3</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;copy %v to new array %v\n&#34;</span><span class="p">,</span> <span class="nx">s3</span><span class="p">,</span> <span class="nx">b3</span><span class="p">)</span>
 </pre>
           </td>
         </tr>
@@ -219,7 +219,7 @@ underlying array: [3]int{1, 2, 3}</li>
             
           <pre class="chroma">
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;inline copy %v with append: %v\n&#34;</span><span class="p">,</span>
-        <span class="nx">s1</span><span class="p">,</span> <span class="nb">append</span><span class="p">([]</span><span class="kt">int</span><span class="p">{},</span> <span class="nx">s1</span><span class="o">...</span><span class="p">))</span>
+        <span class="nx">s3</span><span class="p">,</span> <span class="nb">append</span><span class="p">([]</span><span class="kt">int</span><span class="p">{},</span> <span class="nx">s3</span><span class="o">...</span><span class="p">))</span>
 </pre>
           </td>
         </tr>
@@ -232,9 +232,9 @@ underlying array: [3]int{1, 2, 3}</li>
           <td class="code leading">
             
           <pre class="chroma">
-    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;b2&#34;</span><span class="p">,</span> <span class="nx">b2</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">b2</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">b2</span><span class="p">))</span>
-    <span class="nx">s1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">=</span> <span class="mi">41</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;b2&#34;</span><span class="p">,</span> <span class="nx">b2</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">b2</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">b2</span><span class="p">))</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;b3&#34;</span><span class="p">,</span> <span class="nx">b3</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">b3</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">b3</span><span class="p">))</span>
+    <span class="nx">s3</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">=</span> <span class="mi">41</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;b3&#34;</span><span class="p">,</span> <span class="nx">b3</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">b3</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">b3</span><span class="p">))</span>
 </pre>
           </td>
         </tr>
@@ -267,8 +267,8 @@ underlying array: [3]int{1, 2, 3}</li>
           <td class="code leading">
             
           <pre class="chroma">
-    <span class="nx">s2</span> <span class="p">=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;s2&#34;</span><span class="p">,</span> <span class="nx">s2</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s2</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s2</span><span class="p">))</span>
+    <span class="nx">s4</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;s4&#34;</span><span class="p">,</span> <span class="nx">s4</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s4</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s4</span><span class="p">))</span>
 </pre>
           </td>
         </tr>
@@ -276,18 +276,30 @@ underlying array: [3]int{1, 2, 3}</li>
         <tr>
           <td class="docs">
             <p>increase the length of slice with slicing operator
-works up until the cap(s2)</p>
+works up until the cap(s4)</p>
 
           </td>
           <td class="code leading">
             
           <pre class="chroma">
-    <span class="nx">s2</span> <span class="p">=</span> <span class="nx">s2</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;s2&#34;</span><span class="p">,</span> <span class="nx">s2</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s2</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s2</span><span class="p">))</span>
-    <span class="nx">s1</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;s1&#34;</span><span class="p">,</span> <span class="nx">s1</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s1</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s1</span><span class="p">))</span>
-    <span class="nx">s1</span> <span class="p">=</span> <span class="nf">appendInt</span><span class="p">(</span><span class="nx">s1</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;s1&#34;</span><span class="p">,</span> <span class="nx">s1</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s1</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s1</span><span class="p">))</span>
+    <span class="nx">s4</span> <span class="p">=</span> <span class="nx">s4</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="c1">// len=3, cap=5
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;s4&#34;</span><span class="p">,</span> <span class="nx">s4</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s4</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s4</span><span class="p">))</span>
+    <span class="nx">s5</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;s5&#34;</span><span class="p">,</span> <span class="nx">s5</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s5</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s5</span><span class="p">))</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>trigger the capacity increase since reached the threshold</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">s5</span> <span class="p">=</span> <span class="nf">append_</span><span class="p">(</span><span class="nx">s5</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span> <span class="c1">// cap 3 -&gt; 8, len 3 -&gt; 4
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;s5&#34;</span><span class="p">,</span> <span class="nx">s5</span><span class="p">,</span> <span class="s">&#34;cap&#34;</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s5</span><span class="p">),</span> <span class="s">&#34;len&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s5</span><span class="p">))</span>
 </pre>
           </td>
         </tr>
@@ -309,7 +321,7 @@ works up until the cap(s2)</p>
           </td>
           <td class="code leading">
             
-          <pre class="chroma"><span class="kd">func</span> <span class="nf">copyInt</span><span class="p">(</span><span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+          <pre class="chroma"><span class="kd">func</span> <span class="nx">copySlice</span><span class="p">[</span><span class="nx">K</span> <span class="nx">any</span><span class="p">](</span><span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span> <span class="p">[]</span><span class="nx">K</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">n</span> <span class="kt">int</span>
     <span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">src</span> <span class="p">{</span>
         <span class="nx">dst</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nx">src</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
@@ -323,15 +335,29 @@ works up until the cap(s2)</p>
         
         <tr>
           <td class="docs">
+            <p>simulate the append of go internal</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nx">append_</span><span class="p">[</span><span class="nx">K</span> <span class="nx">any</span><span class="p">](</span><span class="nx">s</span> <span class="p">[]</span><span class="nx">K</span><span class="p">,</span> <span class="nx">e</span> <span class="nx">K</span><span class="p">)</span> <span class="p">[]</span><span class="nx">K</span> <span class="p">{</span>
+    <span class="nx">expLen</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="p">&lt;</span> <span class="nx">expLen</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
             <p>grow the slice
 new allocation create new slice from scratch</p>
 
           </td>
           <td class="code leading">
             
-          <pre class="chroma"><span class="kd">func</span> <span class="nf">appendInt</span><span class="p">(</span><span class="nx">s</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">e</span> <span class="kt">int</span><span class="p">)</span> <span class="p">[]</span><span class="kt">int</span> <span class="p">{</span>
-    <span class="nx">expLen</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="p">&lt;</span> <span class="nx">expLen</span> <span class="p">{</span>
+          <pre class="chroma">
+        <span class="nx">newS</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="nx">K</span><span class="p">,</span> <span class="nx">expLen</span><span class="p">,</span> <span class="p">(</span><span class="nb">cap</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
 </pre>
           </td>
         </tr>
@@ -343,7 +369,8 @@ new allocation create new slice from scratch</p>
           </td>
           <td class="code leading">
             
-          <pre class="chroma">        <span class="nx">newS</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">expLen</span><span class="p">,</span> <span class="p">(</span><span class="nb">cap</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+          <pre class="chroma">
+        <span class="nf">copySlice</span><span class="p">(</span><span class="nx">newS</span><span class="p">,</span> <span class="nx">s</span><span class="p">)</span>
 </pre>
           </td>
         </tr>
@@ -355,7 +382,9 @@ new allocation create new slice from scratch</p>
           </td>
           <td class="code leading">
             
-          <pre class="chroma">        <span class="nf">copyInt</span><span class="p">(</span><span class="nx">newS</span><span class="p">,</span> <span class="nx">s</span><span class="p">)</span>
+          <pre class="chroma">
+        <span class="nx">s</span> <span class="p">=</span> <span class="nx">newS</span>
+    <span class="p">}</span>
 </pre>
           </td>
         </tr>
@@ -367,8 +396,8 @@ new allocation create new slice from scratch</p>
           </td>
           <td class="code leading">
             
-          <pre class="chroma">        <span class="nx">s</span> <span class="p">=</span> <span class="nx">newS</span>
-    <span class="p">}</span>
+          <pre class="chroma">
+    <span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">[:</span><span class="nx">expLen</span><span class="p">]</span>
 </pre>
           </td>
         </tr>
@@ -378,20 +407,10 @@ new allocation create new slice from scratch</p>
             <p>assign the element</p>
 
           </td>
-          <td class="code leading">
-            
-          <pre class="chroma">    <span class="nx">s</span> <span class="p">=</span> <span class="nx">s</span><span class="p">[:</span><span class="nx">expLen</span><span class="p">]</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            
-          </td>
           <td class="code">
             
-          <pre class="chroma">    <span class="nx">s</span><span class="p">[</span><span class="nx">expLen</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">e</span>
+          <pre class="chroma">
+    <span class="nx">s</span><span class="p">[</span><span class="nx">expLen</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">e</span>
     <span class="k">return</span> <span class="nx">s</span>
 <span class="p">}</span>
 </pre>
@@ -422,13 +441,13 @@ they are rendered similarly by <code>fmt.Println</code>.</p>
 </span><span class="go">b1 [2 42] cap 2 len 2
 </span><span class="go">copy [1 2 3] to new array [1 2 3]
 </span><span class="go">inline copy [1 2 3] with append: [1 2 3]
-</span><span class="go">b2 [1 2 3] cap 3 len 3
-</span><span class="go">b2 [1 2 3] cap 3 len 3
+</span><span class="go">b3 [1 2 3] cap 3 len 3
+</span><span class="go">b3 [1 2 3] cap 3 len 3
 </span><span class="go">keyS [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] cap 16 len 16
-</span><span class="go">s2 [0 0 0] cap 10 len 3
-</span><span class="go">s2 [0 0 0 0 0] cap 10 len 5
-</span><span class="go">s1 [1 2 3] cap 3 len 3
-</span><span class="go">s1 [1 2 3 31] cap 8 len 4</span></pre>
+</span><span class="go">s4 [0 0 0] cap 10 len 3
+</span><span class="go">s4 [0 0 0 0 0] cap 10 len 5
+</span><span class="go">s5 [1 2 3] cap 3 len 3
+</span><span class="go">s5 [1 2 3 31] cap 8 len 4</span></pre>
           </td>
         </tr>
         
@@ -462,7 +481,7 @@ implementation of slices in Go.</p>
     </div>
     <script>
       var codeLines = [];
-      codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import \"fmt\"\u000A');codeLines.push('func main() {\u000A');codeLines.push('    var a [3]int\u000A    b :\u003D [3]int{1, 2, 3}\u000A    c :\u003D [...]int{1, 2, 3, 4}\u000A    fmt.Println(\"a\", a)\u000A    fmt.Println(\"b\", b)\u000A    fmt.Println(\"c\", c)\u000A');codeLines.push('    a[2] \u003D 31\u000A    fmt.Println(\"modify array a\", a)\u000A');codeLines.push('    s1 :\u003D []int{1, 2, 3}\u000A');codeLines.push('    s2 :\u003D make([]int, 3, 6)\u000A    fmt.Println(\"s1\", s1, \"cap\", cap(s1), \"len\", len(s1))\u000A    fmt.Println(\"s2\", s2, \"cap\", cap(s2), \"len\", len(s2))\u000A');codeLines.push('    b1 :\u003D s1[1:3]\u000A    fmt.Println(\"copy slice with slicing operator\")\u000A    fmt.Println(\"b1\", b1, \"cap\", cap(b1), \"len\", len(b1))\u000A');codeLines.push('    s1[2] \u003D 42\u000A    fmt.Println(\"b1\", b1, \"cap\", cap(b1), \"len\", len(b1))\u000A');codeLines.push('    s1 \u003D []int{1, 2, 3}\u000A    b2 :\u003D make([]int, len(s1))\u000A');codeLines.push('    copy(b2, s1)\u000A    fmt.Printf(\"copy %v to new array %v\\n\", s1, b2)\u000A');codeLines.push('    fmt.Printf(\"inline copy %v with append: %v\\n\",\u000A        s1, append([]int{}, s1...))\u000A');codeLines.push('    fmt.Println(\"b2\", b2, \"cap\", cap(b2), \"len\", len(b2))\u000A    s1[2] \u003D 41\u000A    fmt.Println(\"b2\", b2, \"cap\", cap(b2), \"len\", len(b2))\u000A');codeLines.push('    key :\u003D [16]byte{}\u000A    keyS :\u003D key[:]\u000A    fmt.Println(\"keyS\", keyS, \"cap\",\u000A        cap(keyS), \"len\", len(keyS))\u000A');codeLines.push('    s2 \u003D make([]int, 3, 10)\u000A    fmt.Println(\"s2\", s2, \"cap\", cap(s2), \"len\", len(s2))\u000A');codeLines.push('    s2 \u003D s2[:5]\u000A    fmt.Println(\"s2\", s2, \"cap\", cap(s2), \"len\", len(s2))\u000A    s1 \u003D []int{1, 2, 3}\u000A    fmt.Println(\"s1\", s1, \"cap\", cap(s1), \"len\", len(s1))\u000A    s1 \u003D appendInt(s1, 31)\u000A    fmt.Println(\"s1\", s1, \"cap\", cap(s1), \"len\", len(s1))\u000A');codeLines.push('}\u000A');codeLines.push('func copyInt(dst, src []int) int {\u000A    var n int\u000A    for i, _ :\u003D range src {\u000A        dst[i] \u003D src[i]\u000A        n++\u000A    }\u000A    return n\u000A}\u000A');codeLines.push('func appendInt(s []int, e int) []int {\u000A    expLen :\u003D len(s) + 1\u000A    if cap(s) \u003C expLen {\u000A');codeLines.push('        newS :\u003D make([]int, expLen, (cap(s)+1)*2)\u000A');codeLines.push('        copyInt(newS, s)\u000A');codeLines.push('        s \u003D newS\u000A    }\u000A');codeLines.push('    s \u003D s[:expLen]\u000A');codeLines.push('    s[expLen-1] \u003D e\u000A    return s\u000A}\u000A');codeLines.push('');codeLines.push('');
+      codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import \"fmt\"\u000A');codeLines.push('func main() {\u000A');codeLines.push('    var a [3]int\u000A    b :\u003D [3]int{1, 2, 3}\u000A    c :\u003D [...]int{1, 2, 3, 4}\u000A    fmt.Println(\"a\", a)\u000A    fmt.Println(\"b\", b)\u000A    fmt.Println(\"c\", c)\u000A');codeLines.push('    a[2] \u003D 31\u000A    fmt.Println(\"modify array a\", a)\u000A');codeLines.push('    s1 :\u003D []int{1, 2, 3}\u000A');codeLines.push('    s2 :\u003D make([]int, 3, 6)\u000A    fmt.Println(\"s1\", s1, \"cap\", cap(s1), \"len\", len(s1))\u000A    fmt.Println(\"s2\", s2, \"cap\", cap(s2), \"len\", len(s2))\u000A');codeLines.push('    b1 :\u003D s1[1:3]\u000A    fmt.Println(\"copy slice with slicing operator\")\u000A    fmt.Println(\"b1\", b1, \"cap\", cap(b1), \"len\", len(b1))\u000A');codeLines.push('    s1[2] \u003D 42\u000A    fmt.Println(\"b1\", b1, \"cap\", cap(b1), \"len\", len(b1))\u000A');codeLines.push('    s3 :\u003D []int{1, 2, 3}\u000A    b3 :\u003D make([]int, len(s3))\u000A');codeLines.push('    copy(b3, s3)\u000A    fmt.Printf(\"copy %v to new array %v\\n\", s3, b3)\u000A');codeLines.push('    fmt.Printf(\"inline copy %v with append: %v\\n\",\u000A        s3, append([]int{}, s3...))\u000A');codeLines.push('    fmt.Println(\"b3\", b3, \"cap\", cap(b3), \"len\", len(b3))\u000A    s3[2] \u003D 41\u000A    fmt.Println(\"b3\", b3, \"cap\", cap(b3), \"len\", len(b3))\u000A');codeLines.push('    key :\u003D [16]byte{}\u000A    keyS :\u003D key[:]\u000A    fmt.Println(\"keyS\", keyS, \"cap\",\u000A        cap(keyS), \"len\", len(keyS))\u000A');codeLines.push('    s4 :\u003D make([]int, 3, 10)\u000A    fmt.Println(\"s4\", s4, \"cap\", cap(s4), \"len\", len(s4))\u000A');codeLines.push('    s4 \u003D s4[:5] // len\u003D3, cap\u003D5\u000A    fmt.Println(\"s4\", s4, \"cap\", cap(s4), \"len\", len(s4))\u000A    s5 :\u003D []int{1, 2, 3}\u000A    fmt.Println(\"s5\", s5, \"cap\", cap(s5), \"len\", len(s5))\u000A');codeLines.push('    s5 \u003D append_(s5, 31) // cap 3 -\u003E 8, len 3 -\u003E 4\u000A    fmt.Println(\"s5\", s5, \"cap\", cap(s5), \"len\", len(s5))\u000A');codeLines.push('}\u000A');codeLines.push('func copySlice[K any](dst, src []K) int {\u000A    var n int\u000A    for i, _ :\u003D range src {\u000A        dst[i] \u003D src[i]\u000A        n++\u000A    }\u000A    return n\u000A}\u000A');codeLines.push('func append_[K any](s []K, e K) []K {\u000A    expLen :\u003D len(s) + 1\u000A    if cap(s) \u003C expLen {\u000A');codeLines.push('        newS :\u003D make([]K, expLen, (cap(s)+1)*2)\u000A');codeLines.push('        copySlice(newS, s)\u000A');codeLines.push('        s \u003D newS\u000A    }\u000A');codeLines.push('    s \u003D s[:expLen]\u000A');codeLines.push('    s[expLen-1] \u003D e\u000A    return s\u000A}\u000A');codeLines.push('');codeLines.push('');
     </script>
     <script src="site.js" async></script>
   </body>
