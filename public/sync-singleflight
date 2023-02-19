@@ -13,6 +13,10 @@
           }
           
           
+          if (e.key == "ArrowRight") {
+              window.location.href = 'pattern-singleton.html';
+          }
+          
       }
   </script>
   <body>
@@ -332,6 +336,10 @@ others goroutine will use that result.</p>
         
       </table>
       
+      
+      <p class="next">
+        Next example: <a href="pattern-singleton.html">Pattern: Singleton</a>.
+      </p>
       
 
     <p class="footer">
