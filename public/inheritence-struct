@@ -30,7 +30,7 @@
             
           </td>
           <td class="code leading">
-            <a href="https://go.dev/play/p/GFctetj5C6h"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+            <a href="https://go.dev/play/p/DmgorW8Ojam"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
           <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
 </pre>
           </td>
@@ -75,33 +75,9 @@
             
           <pre class="chroma">
 <span class="kd">type</span> <span class="nx">Cat</span> <span class="kd">struct</span> <span class="p">{</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            <p>inherited from animal</p>
-
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma">
-    <span class="nx">Animal</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            <p>member specific for cat</p>
-
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma">
-    <span class="nx">color</span> <span class="kt">string</span>
-<span class="p">}</span>
+    <span class="nx">Animal</span>        <span class="c1">// inherited from animal
+</span><span class="c1"></span>    <span class="nx">color</span>  <span class="kt">string</span> <span class="c1">// member specific for cat
+</span><span class="c1"></span><span class="p">}</span>
 </pre>
           </td>
         </tr>
@@ -115,33 +91,9 @@
             
           <pre class="chroma">
 <span class="kd">type</span> <span class="nx">Fish</span> <span class="kd">struct</span> <span class="p">{</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            <p>inherited from animal</p>
-
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma">
-    <span class="nx">Animal</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            <p>member specific for Fish</p>
-
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma">
-    <span class="nx">length</span> <span class="kt">int</span>
-<span class="p">}</span>
+    <span class="nx">Animal</span>     <span class="c1">// inherited from animal
+</span><span class="c1"></span>    <span class="nx">length</span> <span class="kt">int</span> <span class="c1">// member specific for Fish
+</span><span class="c1"></span><span class="p">}</span>
 </pre>
           </td>
         </tr>
@@ -204,7 +156,7 @@
         
         <tr>
           <td class="docs">
-            <p>Alien also implement CanEatInterface</p>
+            <p>Alien is not Animal, also implement CanEatInterface</p>
 
           </td>
           <td class="code leading">
@@ -219,8 +171,9 @@
         
         <tr>
           <td class="docs">
-            <p>Use Interface to solve Parametric polymorphism
-should accept AnimalInterface</p>
+            <p>Before Go support generics, <br/>
+It&rsquo;s common to use Interface to solve Parametric polymorphism.  <br/>
+It should accept AnimalInterface</p>
 
           </td>
           <td class="code leading">
@@ -236,24 +189,13 @@ should accept AnimalInterface</p>
         
         <tr>
           <td class="docs">
-            <p>animal.eat()</p>
-
+            
           </td>
           <td class="code leading">
             
           <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">a</span> <span class="o">:=</span> <span class="nx">Animal</span><span class="p">{</span><span class="nx">name</span><span class="p">:</span> <span class="s">&#34;mammal&#34;</span><span class="p">,</span> <span class="nx">subject</span><span class="p">:</span> <span class="s">&#34;carnivorous&#34;</span><span class="p">,</span> <span class="nx">food</span><span class="p">:</span> <span class="s">&#34;maet&#34;</span><span class="p">}</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma">    <span class="nx">a</span><span class="p">.</span><span class="nf">eat</span><span class="p">()</span>
+    <span class="nx">a</span><span class="p">.</span><span class="nf">eat</span><span class="p">()</span>
 </pre>
           </td>
         </tr>
@@ -369,7 +311,7 @@ should accept AnimalInterface</p>
     </div>
     <script>
       var codeLines = [];
-      codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"fmt\"\u000A)\u000A');codeLines.push('type Animal struct {\u000A    name    string\u000A    subject string\u000A    food    string\u000A}\u000A');codeLines.push('type Cat struct {\u000A');codeLines.push('    Animal\u000A');codeLines.push('    color string\u000A}\u000A');codeLines.push('type Fish struct {\u000A');codeLines.push('    Animal\u000A');codeLines.push('    length int\u000A}\u000A');codeLines.push('func (c Cat) talk() {\u000A    fmt.Printf(\"my name is %s. and my color is %s\\n\", c.name, c.color)\u000A}\u000A');codeLines.push('func (a Animal) eat() {\u000A    fmt.Println(a.name + \" only eat \" + a.food + \", it belongs to\" + a.subject)\u000A}\u000A');codeLines.push('type CanEatInterface interface {\u000A    eat()\u000A}\u000A');codeLines.push('type Alien struct{}\u000A');codeLines.push('func (a Alien) eat() {\u000A    fmt.Println(\"nom nom\")\u000A}\u000A');codeLines.push('func dinnerTime(a CanEatInterface) {\u000A    fmt.Print(\"dinnerTime: \")\u000A    a.eat()\u000A}\u000A');codeLines.push('func main() {\u000A    a :\u003D Animal{name: \"mammal\", subject: \"carnivorous\", food: \"maet\"}\u000A');codeLines.push('    a.eat()\u000A');codeLines.push('    cat :\u003D Cat{Animal: Animal{name: \"meow\", subject: \"cat\", food: \"fish\"}, color: \"black\"}\u000A    cat.eat()\u000A    cat.talk()\u000A');codeLines.push('    fish :\u003D Fish{Animal: Animal{name: \"blublu\", subject: \"deep ocean\", food: \"seeweed\"}, length: 6}\u000A');codeLines.push('    dinnerTime(a)\u000A    dinnerTime(cat)\u000A    dinnerTime(fish)\u000A');codeLines.push('    al :\u003D Alien{}\u000A    dinnerTime(al)\u000A');codeLines.push('}\u000A');codeLines.push('');codeLines.push('');
+      codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"fmt\"\u000A)\u000A');codeLines.push('type Animal struct {\u000A    name    string\u000A    subject string\u000A    food    string\u000A}\u000A');codeLines.push('type Cat struct {\u000A    Animal        // inherited from animal\u000A    color  string // member specific for cat\u000A}\u000A');codeLines.push('type Fish struct {\u000A    Animal     // inherited from animal\u000A    length int // member specific for Fish\u000A}\u000A');codeLines.push('func (c Cat) talk() {\u000A    fmt.Printf(\"my name is %s. and my color is %s\\n\", c.name, c.color)\u000A}\u000A');codeLines.push('func (a Animal) eat() {\u000A    fmt.Println(a.name + \" only eat \" + a.food + \", it belongs to\" + a.subject)\u000A}\u000A');codeLines.push('type CanEatInterface interface {\u000A    eat()\u000A}\u000A');codeLines.push('type Alien struct{}\u000A');codeLines.push('func (a Alien) eat() {\u000A    fmt.Println(\"nom nom\")\u000A}\u000A');codeLines.push('func dinnerTime(a CanEatInterface) {\u000A    fmt.Print(\"dinnerTime: \")\u000A    a.eat()\u000A}\u000A');codeLines.push('func main() {\u000A    a :\u003D Animal{name: \"mammal\", subject: \"carnivorous\", food: \"maet\"}\u000A    a.eat()\u000A');codeLines.push('    cat :\u003D Cat{Animal: Animal{name: \"meow\", subject: \"cat\", food: \"fish\"}, color: \"black\"}\u000A    cat.eat()\u000A    cat.talk()\u000A');codeLines.push('    fish :\u003D Fish{Animal: Animal{name: \"blublu\", subject: \"deep ocean\", food: \"seeweed\"}, length: 6}\u000A');codeLines.push('    dinnerTime(a)\u000A    dinnerTime(cat)\u000A    dinnerTime(fish)\u000A');codeLines.push('    al :\u003D Alien{}\u000A    dinnerTime(al)\u000A');codeLines.push('}\u000A');codeLines.push('');codeLines.push('');
     </script>
     <script src="site.js" async></script>
   </body>

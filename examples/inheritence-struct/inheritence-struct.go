@@ -13,18 +13,14 @@ type Animal struct {
 
 // Child Class
 type Cat struct {
-	// inherited from animal
-	Animal
-	// member specific for cat
-	color string
+	Animal        // inherited from animal
+	color  string // member specific for cat
 }
 
 // Child Class
 type Fish struct {
-	// inherited from animal
-	Animal
-	// member specific for Fish
-	length int
+	Animal     // inherited from animal
+	length int // member specific for Fish
 }
 
 // method specific for cat
@@ -44,13 +40,14 @@ type CanEatInterface interface {
 
 type Alien struct{}
 
-// Alien also implement CanEatInterface
+// Alien is not Animal, also implement CanEatInterface
 func (a Alien) eat() {
 	fmt.Println("nom nom")
 }
 
-// Use Interface to solve Parametric polymorphism
-// should accept AnimalInterface
+// Before Go support generics, <br/>
+// It's common to use Interface to solve Parametric polymorphism.  <br/>
+// It should accept AnimalInterface
 func dinnerTime(a CanEatInterface) {
 	fmt.Print("dinnerTime: ")
 	a.eat()
@@ -58,7 +55,6 @@ func dinnerTime(a CanEatInterface) {
 
 func main() {
 	a := Animal{name: "mammal", subject: "carnivorous", food: "maet"}
-	// animal.eat()
 	a.eat()
 
 	// declare Cat
