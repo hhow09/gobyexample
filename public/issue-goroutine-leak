@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Go by Example: Issue: Goroutine Leak</title>
+    <link rel=stylesheet href="site.css">
+  </head>
+  <script>
+      onkeydown = (e) => {
+          
+          if (e.key == "ArrowLeft") {
+              window.location.href = 'channel-merge.html';
+          }
+          
+          
+          if (e.key == "ArrowRight") {
+              window.location.href = 'encoding-json.html';
+          }
+          
+      }
+  </script>
+  <body>
+    <div class="example" id="issue-goroutine-leak">
+      <h2><a href="./">Go by Example</a>: Issue: Goroutine Leak</h2>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            <p>Types of goroutine leak:</p>
+
+<p>1) The forgotten sender</p>
+
+<p>2) The abandoned receiver</p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>In short:  Never start a goroutine without knowing how it will stop</p>
+
+<p>package to detect goroutine leak <a href="https://github.com/uber-go/goleak">uber-go/goleak</a></p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            <a href="https://go.dev/play/p/tFOa01bT9s7"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+          <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;context&#34;</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;time&#34;</span>
+<span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>1) sender with no stopping mechanism
+it does not know when to stop</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">forgottenSender</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">ch</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">n</span> <span class="kt">int</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1) blocked &#34;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+            <span class="nx">ch</span> <span class="o">&lt;-</span> <span class="nx">n</span>
+            <span class="nx">n</span><span class="o">++</span>
+            <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">200</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">ch</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>1-fixed) sender with cancel mechanism</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">sender_with_cancel</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">ch</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">n</span> <span class="kt">int</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="k">select</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>stop sending if canceled</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+            <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">ctx</span><span class="p">.</span><span class="nf">Done</span><span class="p">():</span>
+                <span class="k">return</span>
+            <span class="k">case</span> <span class="nx">ch</span> <span class="o">&lt;-</span> <span class="nx">n</span><span class="p">:</span>
+                <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1-fixed) blocked &#34;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+                <span class="nx">n</span><span class="o">++</span>
+                <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">200</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+            <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">        <span class="p">}</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">ch</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>2) abandonedWorker</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">abandonedWorker</span><span class="p">(</span><span class="nx">ch</span> <span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">ch</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;2) received&#34;</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>worker disaptcher should know when it stop produce <br/>
+but he forgot. <br/>
+fatal error: all goroutines are asleep - deadlock!</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">getWork_deadlock</span><span class="p">()</span> <span class="kd">chan</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">workCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+            <span class="nx">workCh</span> <span class="o">&lt;-</span> <span class="nx">i</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">workCh</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>2-fixed) close the channel</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">getWork_fixed</span><span class="p">()</span> <span class="kd">chan</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">workCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+            <span class="nx">workCh</span> <span class="o">&lt;-</span> <span class="nx">i</span>
+        <span class="p">}</span>
+        <span class="nb">close</span><span class="p">(</span><span class="nx">workCh</span><span class="p">)</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">workCh</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>1) forgottenSender is left blocked</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1) forgottenSender is left blocked&#34;</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="k">for</span> <span class="nx">n</span> <span class="o">:=</span> <span class="k">range</span> <span class="nf">forgottenSender</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1) received&#34;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">5</span> <span class="p">{</span>
+            <span class="k">break</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1-fixed) fixed with context cancel&#34;</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>1-fixed) fixed with context cancel</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithCancel</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">())</span>
+    <span class="k">for</span> <span class="nx">n</span> <span class="o">:=</span> <span class="k">range</span> <span class="nf">sender_with_cancel</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;1-fixed) received&#34;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">5</span> <span class="p">{</span>
+            <span class="nf">cancel</span><span class="p">()</span> <span class="c1">// remember to cancel
+</span><span class="c1"></span>            <span class="k">break</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;2) abandonedWorker&#34;</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>2) abandonedWorker
+fatal error: all goroutines are asleep - deadlock!</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="c1">//// workCh := getWork_deadlock()
+</span><span class="c1"></span>    <span class="c1">//// abandonedWorker(workCh)
+</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>2-fixed) abandonedWorker</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;2-fixed) abandonedWorker&#34;</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">workCh_</span> <span class="o">:=</span> <span class="nf">getWork_fixed</span><span class="p">()</span>
+    <span class="nf">abandonedWorker</span><span class="p">(</span><span class="nx">workCh_</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>ref: <a href="https://betterprogramming.pub/common-goroutine-leaks-that-you-should-avoid-fe12d12d6ee">https://betterprogramming.pub/common-goroutine-leaks-that-you-should-avoid-fe12d12d6ee</a></p>
+
+          </td>
+          <td class="code empty">
+            
+          
+          </td>
+        </tr>
+        
+      </table>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="gp">$</span> go run issue-goroutine-leak.go</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="go">1) forgottenSender is left blocked
+</span><span class="go">1) blocked  0
+</span><span class="go">1) received 0
+</span><span class="go">...
+</span><span class="go">1) blocked  5
+</span><span class="go">1) received 5</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="go">1-fixed) fixed with context cancel
+</span><span class="go">1-fixed) blocked  0
+</span><span class="go">1-fixed) received 0
+</span><span class="go">1-fixed) blocked  1
+</span><span class="go">1-fixed) received 1</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>we can see the leaked goroutine of example-1</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="go">1) blocked  6       // the forgottne sender</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="go">1-fixed) blocked  2
+</span><span class="go">1-fixed) received 2
+</span><span class="go">...
+</span><span class="go">1-fixed) blocked  5
+</span><span class="go">1-fixed) received 5</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="go">2) abandonedWorker
+</span><span class="go">2-fixed) abandonedWorker
+</span><span class="go">2) received 0
+</span><span class="go">2) received 1
+</span><span class="go">2) received 2
+</span><span class="go">2) received 3</span></pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      
+      <p class="next">
+        Next example: <a href="encoding-json.html">encoding/json</a>.
+      </p>
+      
+
+    <p class="footer">
+      <a href="https://github.com/hhow09/gobyexample">source</a>
+      <br/>
+      Forked from <a href="https://gobyexample.com">Go by Example</a>
+    </p>
+
+    </div>
+    <script>
+      var codeLines = [];
+      codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"context\"\u000A    \"fmt\"\u000A    \"time\"\u000A)\u000A');codeLines.push('func forgottenSender() \u003C-chan int {\u000A    ch :\u003D make(chan int)\u000A    go func() {\u000A        var n int\u000A        for {\u000A            fmt.Println(\"1) blocked \", n)\u000A            ch \u003C- n\u000A            n++\u000A            time.Sleep(200 * time.Millisecond)\u000A        }\u000A    }()\u000A    return ch\u000A}\u000A');codeLines.push('func sender_with_cancel(ctx context.Context) \u003C-chan int {\u000A    ch :\u003D make(chan int)\u000A    go func() {\u000A        var n int\u000A        for {\u000A            select {\u000A');codeLines.push('            case \u003C-ctx.Done():\u000A                return\u000A            case ch \u003C- n:\u000A                fmt.Println(\"1-fixed) blocked \", n)\u000A                n++\u000A                time.Sleep(200 * time.Millisecond)\u000A            }\u000A');codeLines.push('        }\u000A    }()\u000A    return ch\u000A}\u000A');codeLines.push('func abandonedWorker(ch chan int) {\u000A    for i :\u003D range ch {\u000A        fmt.Println(\"2) received\", i)\u000A    }\u000A}\u000A');codeLines.push('func getWork_deadlock() chan int {\u000A    workCh :\u003D make(chan int)\u000A    go func() {\u000A        for i :\u003D 0; i \u003C 5; i++ {\u000A            workCh \u003C- i\u000A        }\u000A    }()\u000A    return workCh\u000A}\u000A');codeLines.push('func getWork_fixed() chan int {\u000A    workCh :\u003D make(chan int)\u000A    go func() {\u000A        for i :\u003D 0; i \u003C 5; i++ {\u000A            workCh \u003C- i\u000A        }\u000A        close(workCh)\u000A    }()\u000A    return workCh\u000A}\u000A');codeLines.push('func main() {\u000A    fmt.Println(\"1) forgottenSender is left blocked\")\u000A');codeLines.push('    for n :\u003D range forgottenSender() {\u000A        fmt.Println(\"1) received\", n)\u000A        if n \u003D\u003D 5 {\u000A            break\u000A        }\u000A    }\u000A');codeLines.push('    fmt.Println(\"\")\u000A    fmt.Println(\"1-fixed) fixed with context cancel\")\u000A');codeLines.push('    ctx, cancel :\u003D context.WithCancel(context.Background())\u000A    for n :\u003D range sender_with_cancel(ctx) {\u000A        fmt.Println(\"1-fixed) received\", n)\u000A        if n \u003D\u003D 5 {\u000A            cancel() // remember to cancel\u000A            break\u000A        }\u000A    }\u000A    fmt.Println(\"2) abandonedWorker\")\u000A');codeLines.push('    //// workCh :\u003D getWork_deadlock()\u000A    //// abandonedWorker(workCh)\u000A');codeLines.push('    fmt.Println(\"2-fixed) abandonedWorker\")\u000A');codeLines.push('    workCh_ :\u003D getWork_fixed()\u000A    abandonedWorker(workCh_)\u000A');codeLines.push('}\u000A');codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('');
+    </script>
+    <script src="site.js" async></script>
+  </body>
+</html>
