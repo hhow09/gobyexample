@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Go by Example: Pattern: Fan-In</title>
+    <link rel=stylesheet href="site.css">
+  </head>
+  <script>
+      onkeydown = (e) => {
+          
+          if (e.key == "ArrowLeft") {
+              window.location.href = 'pattern-singleton.html';
+          }
+          
+          
+      }
+  </script>
+  <body>
+    <div class="example" id="pattern-fan-in">
+      <h2><a href="./">Go by Example</a>: Pattern: Fan-In</h2>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            <p>Fan in pattern:
+is a concurrency paradigm where inputs from several sources get converged (multiplexed) into a single stream.
+In simple words , this paradigm can be thought of as producer and consumer architecture</p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>In this example there is 2 ways to merge the channel 1) with sync.WaitGroup 2) with atomic.Add</p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Ref <br/>
+1) Youtube: <a href="https://youtu.be/x6vBvgKGvxU">Learning Golang: Concurrency Patterns Fan-In and Fan-Out</a> <br/>
+2) <a href="https://github.com/MarioCarrion/videos/tree/3107ff408e0db59b5e9ae07412460375aeb8786a/2021/08/19">code</a> <br/>
+3) <a href="https://gist.github.com/Xeoncross/3e0328137019b14373ee26701a23ed81">merge channel</a> <br/>
+4) <a href="https://stackoverflow.com/questions/46560204/why-does-my-code-work-correctly-when-i-run-wg-wait-inside-a-goroutine">Why does my code work correctly when I run wg.Wait() inside a goroutine?</a></p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            <a href="https://go.dev/play/p/Bth5qIaw3fj"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+          <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;encoding/csv&#34;</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;io&#34;</span>
+    <span class="s">&#34;os&#34;</span>
+    <span class="s">&#34;path/filepath&#34;</span>
+    <span class="s">&#34;sync&#34;</span>
+    <span class="s">&#34;sync/atomic&#34;</span>
+<span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Read 2 CSV files concurrently. <br/>
+Output within each file remains in order.\n The result would be produced concurrently.</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>merge 2 channels</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">p1</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Abs</span><span class="p">(</span><span class="s">&#34;./assets/file1.csv&#34;</span><span class="p">)</span>
+    <span class="nx">ch1</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">read</span><span class="p">(</span><span class="nx">p1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;could not read file %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="nx">p2</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Abs</span><span class="p">(</span><span class="s">&#34;./assets/file2.csv&#34;</span><span class="p">)</span>
+    <span class="nx">ch2</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">read</span><span class="p">(</span><span class="nx">p2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;could not read file %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="nx">exit</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>chM := mergeAtomic(ch1, ch2)</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">chM</span> <span class="o">:=</span> <span class="nf">mergeWait</span><span class="p">(</span><span class="nx">ch1</span><span class="p">,</span> <span class="nx">ch2</span><span class="p">)</span>
+    <span class="nb">println</span><span class="p">(</span><span class="s">&#34;[LOG] receive the merged channel.&#34;</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">l</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">chM</span> <span class="p">{</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;[CSV Result] %s \n&#34;</span><span class="p">,</span> <span class="nx">l</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nb">close</span><span class="p">(</span><span class="nx">exit</span><span class="p">)</span>
+    <span class="p">}()</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nb">println</span><span class="p">(</span><span class="s">&#34;[LOG] Wait for the exit signal.&#34;</span><span class="p">)</span>
+    <span class="o">&lt;-</span><span class="nx">exit</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;All completed, Exit.&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Opt 1) merge channels with sync.WaitGroup</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">mergeWait</span><span class="p">(</span><span class="nx">cs</span> <span class="o">...&lt;-</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span> <span class="p">{</span>
+    <span class="nx">out</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span>
+    <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>1) wait for all channels</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">cs</span><span class="p">))</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>2) mark done after receiving all values from source chan</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">send</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">ch</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">defer</span> <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+        <span class="k">for</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">ch</span> <span class="p">{</span>
+            <span class="nx">out</span> <span class="o">&lt;-</span> <span class="nx">v</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">ch</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">cs</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="nf">send</span><span class="p">(</span><span class="nx">ch</span><span class="p">)</span>
+    <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>XXX: fatal error: all goroutines are asleep - deadlock!
+we need to return out channel first otherwise this function will block the main thread [4]</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="c1">//// wg.Wait()
+</span><span class="c1"></span>    <span class="c1">//// close(out)
+</span></pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>3) wait and close channel</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>close channel to avoid deadlock</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+        <span class="nb">close</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span>
+        <span class="nb">println</span><span class="p">(</span><span class="s">&#34;[LOG] merged channel closed.&#34;</span><span class="p">)</span>
+    <span class="p">}()</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="k">return</span> <span class="nx">out</span> <span class="c1">// 1. return out first
+</span><span class="c1"></span><span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>option 2) merge channels with atomic counter</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">mergeAtomic</span><span class="p">(</span><span class="nx">cs</span> <span class="o">...&lt;-</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span> <span class="p">{</span>
+    <span class="nx">out</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span>
+    <span class="kd">var</span> <span class="nx">counter</span> <span class="kt">int32</span>
+    <span class="nx">atomic</span><span class="p">.</span><span class="nf">StoreInt32</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">counter</span><span class="p">,</span> <span class="nb">int32</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">cs</span><span class="p">)))</span> <span class="c1">// works like wait group
+</span><span class="c1"></span>    <span class="nx">send</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">c</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">c</span> <span class="p">{</span>
+            <span class="nx">out</span> <span class="o">&lt;-</span> <span class="nx">v</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">AddInt32</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">counter</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="nb">close</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">cs</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="nf">send</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">out</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>utils: read file and return a channel of file lines</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+<span class="kd">func</span> <span class="nf">read</span><span class="p">(</span><span class="nx">relPath</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">absPath</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Abs</span><span class="p">(</span><span class="nx">relPath</span><span class="p">)</span>
+    <span class="nx">f</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Open</span><span class="p">(</span><span class="nx">absPath</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;opening file %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">ch</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span>
+    <span class="nx">cr</span> <span class="o">:=</span> <span class="nx">csv</span><span class="p">.</span><span class="nf">NewReader</span><span class="p">(</span><span class="nx">f</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma">    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="nx">record</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cr</span><span class="p">.</span><span class="nf">Read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+                <span class="nb">close</span><span class="p">(</span><span class="nx">ch</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="p">}</span>
+            <span class="nx">ch</span> <span class="o">&lt;-</span> <span class="nx">record</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">ch</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="gp">$</span> go run pattern-fan-in.go</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="go">[LOG] receive the merged channel.
+</span><span class="go">[LOG] Wait for the exit signal.
+</span><span class="go">[CSV Result] [file2 make large research] 
+</span><span class="go">[CSV Result] [file2 stand skill solve] 
+</span><span class="go">[CSV Result] [file1 rhythm proper secret] 
+</span><span class="go">[CSV Result] [file1 scene screen bright] 
+</span><span class="go">[CSV Result] [file2 you sometime worth] 
+</span><span class="go">[CSV Result] [file2 end uncle long] 
+</span><span class="go">[CSV Result] [file2 ate adjective protection] 
+</span><span class="go">[CSV Result] [file2 nothing there bright] 
+</span><span class="go">[CSV Result] [file1 universe official primitive] 
+</span><span class="go">[CSV Result] [file1 might worried acres] 
+</span><span class="go">[CSV Result] [file1 flow slope eye] 
+</span><span class="go">[CSV Result] [file1 across again threw] 
+</span><span class="go">[CSV Result] [file1 rich won women] 
+</span><span class="go">[LOG] merged channel closed.
+</span><span class="go">All completed, Exit.</span></pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      
+
+    <p class="footer">
+      <a href="https://github.com/hhow09/gobyexample">source</a>
+      <br/>
+      Forked from <a href="https://gobyexample.com">Go by Example</a>
+    </p>
+
+    </div>
+    <script>
+      var codeLines = [];
+      codeLines.push('');codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"encoding/csv\"\u000A    \"fmt\"\u000A    \"io\"\u000A    \"os\"\u000A    \"path/filepath\"\u000A    \"sync\"\u000A    \"sync/atomic\"\u000A)\u000A');codeLines.push('func main() {\u000A');codeLines.push('    p1, _ :\u003D filepath.Abs(\"./assets/file1.csv\")\u000A    ch1, err :\u003D read(p1)\u000A    if err !\u003D nil {\u000A        panic(fmt.Errorf(\"could not read file %v\", err))\u000A    }\u000A    p2, _ :\u003D filepath.Abs(\"./assets/file2.csv\")\u000A    ch2, err :\u003D read(p2)\u000A    if err !\u003D nil {\u000A        panic(fmt.Errorf(\"could not read file %v\", err))\u000A    }\u000A    exit :\u003D make(chan struct{})\u000A');codeLines.push('    chM :\u003D mergeWait(ch1, ch2)\u000A    println(\"[LOG] receive the merged channel.\")\u000A');codeLines.push('    go func() {\u000A        for l :\u003D range chM {\u000A            fmt.Printf(\"[CSV Result] %s \\n\", l)\u000A        }\u000A        close(exit)\u000A    }()\u000A');codeLines.push('    println(\"[LOG] Wait for the exit signal.\")\u000A    \u003C-exit\u000A    fmt.Println(\"All completed, Exit.\")\u000A}\u000A');codeLines.push('func mergeWait(cs ...\u003C-chan []string) \u003C-chan []string {\u000A    out :\u003D make(chan []string)\u000A    var wg sync.WaitGroup\u000A');codeLines.push('    wg.Add(len(cs))\u000A');codeLines.push('    send :\u003D func(ch \u003C-chan []string) {\u000A        defer wg.Done()\u000A        for v :\u003D range ch {\u000A            out \u003C- v\u000A        }\u000A    }\u000A');codeLines.push('    for _, ch :\u003D range cs {\u000A        go send(ch)\u000A    }\u000A');codeLines.push('    //// wg.Wait()\u000A    //// close(out)\u000A');codeLines.push('    go func() {\u000A        wg.Wait()\u000A');codeLines.push('        close(out)\u000A        println(\"[LOG] merged channel closed.\")\u000A    }()\u000A');codeLines.push('    return out // 1. return out first\u000A}\u000A');codeLines.push('func mergeAtomic(cs ...\u003C-chan []string) \u003C-chan []string {\u000A    out :\u003D make(chan []string)\u000A    var counter int32\u000A    atomic.StoreInt32(\u0026counter, int32(len(cs))) // works like wait group\u000A    send :\u003D func(c \u003C-chan []string) {\u000A        for v :\u003D range c {\u000A            out \u003C- v\u000A        }\u000A        if atomic.AddInt32(\u0026counter, -1) \u003D\u003D 0 {\u000A            close(out)\u000A        }\u000A    }\u000A    for _, c :\u003D range cs {\u000A        go send(c)\u000A    }\u000A    return out\u000A}\u000A');codeLines.push('func read(relPath string) (chan []string, error) {\u000A    absPath, _ :\u003D filepath.Abs(relPath)\u000A    f, err :\u003D os.Open(absPath)\u000A    if err !\u003D nil {\u000A        return nil, fmt.Errorf(\"opening file %v\", err)\u000A    }\u000A    ch :\u003D make(chan []string)\u000A    cr :\u003D csv.NewReader(f)\u000A');codeLines.push('    go func() {\u000A        for {\u000A            record, err :\u003D cr.Read()\u000A            if err \u003D\u003D io.EOF {\u000A                close(ch)\u000A                return\u000A            }\u000A            ch \u003C- record\u000A        }\u000A    }()\u000A    return ch, nil\u000A}\u000A');codeLines.push('');codeLines.push('');
+    </script>
+    <script src="site.js" async></script>
+  </body>
+</html>

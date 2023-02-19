@@ -13,6 +13,10 @@
           }
           
           
+          if (e.key == "ArrowRight") {
+              window.location.href = 'pattern-fan-in.html';
+          }
+          
       }
   </script>
   <body>
@@ -254,6 +258,10 @@ check -&gt; lock -&gt; check to reduce the lock access</p>
         
       </table>
       
+      
+      <p class="next">
+        Next example: <a href="pattern-fan-in.html">Pattern: Fan-In</a>.
+      </p>
       
 
     <p class="footer">
