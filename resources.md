@@ -6,7 +6,6 @@
 3. [Go Wiki](https://github.com/golang/go/wiki)
 5. [Clean Go Code](https://github.com/Pungyeon/clean-go-article)
 6. [深入Go语言之旅](https://go.cyub.vip/)
-7. [Go 语言设计与实现](https://draveness.me/golang/)
 
 ## Books
 1. [Go in Action](https://www.manning.com/books/go-in-action)
@@ -18,6 +17,10 @@
 
 ## Practice
 1. [Gophercises](https://gophercises.com/)
+
+## In depth / Internal
+1. [Golang Internals Resources](https://github.com/emluque/golang-internals-resources)
+2. [Go 语言设计与实现](https://draveness.me/golang/)
 
 ## [Roadmap](https://roadmap.sh/golang)
 ![roadmap](./docs/go-raodmap.png)
