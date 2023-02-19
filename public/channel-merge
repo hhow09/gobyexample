@@ -14,7 +14,7 @@
           
           
           if (e.key == "ArrowRight") {
-              window.location.href = 'encoding-json.html';
+              window.location.href = 'issue-goroutine-leak.html';
           }
           
       }
@@ -298,7 +298,7 @@ use nil channel to disable select cases</p>
       
       
       <p class="next">
-        Next example: <a href="encoding-json.html">encoding/json</a>.
+        Next example: <a href="issue-goroutine-leak.html">Issue: Goroutine Leak</a>.
       </p>
       
 

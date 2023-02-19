@@ -8,6 +8,7 @@ Inheritence (interface) | inheritence-interface
 Generics
 Methods | methods
 Channel: Merge | channel-merge
+Issue: Goroutine Leak | issue-goroutine-leak
 encoding/json | encoding-json
 http.RoundTripper | http-roundtripper
 http/httptrace | http-trace
