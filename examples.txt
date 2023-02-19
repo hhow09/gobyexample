@@ -15,3 +15,4 @@ http/httptrace | http-trace
 sync.RWMutex | rwmutex
 sync.singleflight | sync-singleflight
 Pattern: Singleton | pattern-singleton
+Pattern: Fan-In | pattern-fan-in
