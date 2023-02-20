@@ -1,8 +1,10 @@
 # Go by Example
 
-Forked from [Go by Example](https://github.com/mmcgrana/gobyexample).
+My own version of `Go by Example`
 
-[resources](./resources.md)
+learning resources: [resources](./resources.md)
+
+details & internals: [docs](./docs)
 
 ## Develop Notes
 ### Add Examples
@@ -15,3 +17,6 @@ Forked from [Go by Example](https://github.com/mmcgrana/gobyexample).
 ### Local preview
 1. `./tools/build`
 2. `./tools/serve`
+
+## Credits
+Template / Framework forked from [Go by Example](https://github.com/mmcgrana/gobyexample).
