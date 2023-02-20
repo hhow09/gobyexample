@@ -2,6 +2,7 @@
 # custom: name | ID
 Arrays
 Slices
+Performance: Slice-Append | performance-slice-append
 Select
 Inheritence (struct) | inheritence-struct
 Inheritence (interface) | inheritence-interface

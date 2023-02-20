@@ -7,7 +7,9 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.9.0
 	github.com/aws/aws-sdk-go-v2/config v1.7.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.14.0
+	github.com/go-playground/assert v1.2.1
 	github.com/russross/blackfriday/v2 v2.1.0
+	github.com/stretchr/testify v1.3.0
 )
 
 require (
@@ -21,6 +23,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.7.0 // indirect
 	github.com/aws/smithy-go v1.8.0 // indirect
 	github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.2.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 )
