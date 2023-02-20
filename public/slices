@@ -14,7 +14,7 @@
           
           
           if (e.key == "ArrowRight") {
-              window.location.href = 'select.html';
+              window.location.href = 'performance-slice-append.html';
           }
           
       }
@@ -468,7 +468,7 @@ implementation of slices in Go.</p>
       
       
       <p class="next">
-        Next example: <a href="select.html">Select</a>.
+        Next example: <a href="performance-slice-append.html">Performance: Slice-Append</a>.
       </p>
       
 
