@@ -42,7 +42,7 @@
             
           </td>
           <td class="code leading">
-            <a href="https://go.dev/play/p/RwXto-3HWBc"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+            <a href="https://go.dev/play/p/3zq6LZhFLk4"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
           <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
 </pre>
           </td>
@@ -100,7 +100,7 @@ we can compare values of this type with the <code>==</code> and
         
         <tr>
           <td class="docs">
-            <p>comparable type: <a href="https://go.dev/ref/spec#Comparison_operators">https://go.dev/ref/spec#Comparison_operators</a>
+            <p><a href="https://go.dev/ref/spec#Comparison_operators">comparable type</a>
 comparable: bool, int, float, complex, string, pointer, channel, interface, Array, Struct (if all fields comparable)
 non-comparable: Slice, map, and function types are not comparable.</p>
 
@@ -289,8 +289,9 @@ automatically.</p>
         
         <tr>
           <td class="docs">
-            <p>ref: <a href="https://go.dev/doc/tutorial/generics">Tutorial: Getting started with generics</a>
-ref: <a href="https://gobyexample.com/generics">Go by Example: Generics</a></p>
+            <p>ref: <a href="https://go.dev/doc/tutorial/generics">Tutorial: Getting started with generics</a> <br/>
+ref: <a href="https://gobyexample.com/generics">Go by Example: Generics</a> <br/>
+ref: <a href="https://go.dev/ref/spec#Comparison_operators">comparable type</a></p>
 
           </td>
           <td class="code empty">
