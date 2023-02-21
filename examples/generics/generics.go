@@ -24,7 +24,7 @@ type Addable interface {
 	int | int32 | int64 | float64
 }
 
-// comparable type: https://go.dev/ref/spec#Comparison_operators
+// [comparable type](https://go.dev/ref/spec#Comparison_operators)
 // comparable: bool, int, float, complex, string, pointer, channel, interface, Array, Struct (if all fields comparable)
 // non-comparable: Slice, map, and function types are not comparable.
 func SumMapVals[K comparable, V Addable](m map[K]V) V {
@@ -100,5 +100,6 @@ func main() {
 	fmt.Println("LinkList:", lst.GetAll())
 }
 
-// ref: [Tutorial: Getting started with generics](https://go.dev/doc/tutorial/generics)
-// ref: [Go by Example: Generics](https://gobyexample.com/generics)
+// ref: [Tutorial: Getting started with generics](https://go.dev/doc/tutorial/generics) <br/>
+// ref: [Go by Example: Generics](https://gobyexample.com/generics) <br/>
+// ref: [comparable type](https://go.dev/ref/spec#Comparison_operators)

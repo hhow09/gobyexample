@@ -1,8 +1,14 @@
 // docs: https://pkg.go.dev/net/http#RoundTripper
 
-// ref: https://youtu.be/UERCdBrka-o
+// ref: [Go (Golang) http RoundTripper Explained](https://youtu.be/UERCdBrka-o)
 
-// use cases: 1) logging 2) retrying 3) auth 4) caching 5) headers manipulation 6) testing
+// use cases: <br/>
+// 1) logging <br/>
+// 2) retrying <br/>
+// 3) auth <br/>
+// 4) caching <br/>
+// 5) headers manipulation  <br/>
+// 6) testing
 
 package main
 
