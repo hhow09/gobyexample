@@ -1,2 +1,6 @@
 *.pyc
 .idea
+tools/generate
+tools/measure
+tools/serve
+tools/upload
