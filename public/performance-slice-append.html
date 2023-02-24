@@ -43,7 +43,7 @@ ref: <a href="https://stackoverflow.com/questions/38654729/golang-slice-append-v
             
           </td>
           <td class="code leading">
-            <a href="https://go.dev/play/p/8H7HBKg0Tqk"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+            <a href="https://go.dev/play/p/CZSDg2x8xLu"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
           <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
 </pre>
           </td>
@@ -172,75 +172,6 @@ ref: <a href="https://stackoverflow.com/questions/38654729/golang-slice-append-v
       
       <table>
         
-        <tr>
-          <td class="docs">
-            <p>performance-slice-append_test.go</p>
-
-          </td>
-          <td class="code leading">
-            <a href="https://go.dev/play/p/8H7HBKg0Tqk"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
-          <pre class="chroma">
-<span class="kn">package</span> <span class="nx">main</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma"><span class="kn">import</span> <span class="s">&#34;testing&#34;</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma"><span class="kd">func</span> <span class="nf">BenchmarkGenByAppend</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="nf">genByAppend</span><span class="p">()</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma"><span class="kd">func</span> <span class="nf">BenchmarkGenByAppendCap</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="nf">genByAppendCap</span><span class="p">()</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            
-          </td>
-          <td class="code">
-            
-          <pre class="chroma"><span class="kd">func</span> <span class="nf">BenchmarkGenByAssign</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="nf">genByAssign</span><span class="p">()</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre>
-          </td>
-        </tr>
-        
       </table>
       
       
@@ -258,7 +189,7 @@ ref: <a href="https://stackoverflow.com/questions/38654729/golang-slice-append-v
     </div>
     <script>
       var codeLines = [];
-      codeLines.push('');codeLines.push('package main\u000A');codeLines.push('const length \u003D 1000\u000A');codeLines.push('func genByAppend() []int {\u000A    var s []int\u000A    for i :\u003D 0; i \u003C length; i++ {\u000A        s \u003D append(s, i)\u000A    }\u000A    return s\u000A}\u000A');codeLines.push('func genByAppendCap() []int {\u000A    s :\u003D make([]int, 0, length)\u000A    for i :\u003D 0; i \u003C length; i++ {\u000A        s \u003D append(s, i)\u000A    }\u000A');codeLines.push('    return s\u000A}\u000A');codeLines.push('func genByAssign() []int {\u000A    s :\u003D make([]int, length)\u000A    for i :\u003D 0; i \u003C length; i++ {\u000A        s[i] \u003D i\u000A    }\u000A    return s\u000A}\u000A');codeLines.push('');codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import \"testing\"\u000A');codeLines.push('func BenchmarkGenByAppend(b *testing.B) {\u000A    for i :\u003D 0; i \u003C b.N; i++ {\u000A        genByAppend()\u000A    }\u000A}\u000A');codeLines.push('func BenchmarkGenByAppendCap(b *testing.B) {\u000A    for i :\u003D 0; i \u003C b.N; i++ {\u000A        genByAppendCap()\u000A    }\u000A}\u000A');codeLines.push('func BenchmarkGenByAssign(b *testing.B) {\u000A    for i :\u003D 0; i \u003C b.N; i++ {\u000A        genByAssign()\u000A    }\u000A}\u000A');
+      codeLines.push('');codeLines.push('package main\u000A');codeLines.push('const length \u003D 1000\u000A');codeLines.push('func genByAppend() []int {\u000A    var s []int\u000A    for i :\u003D 0; i \u003C length; i++ {\u000A        s \u003D append(s, i)\u000A    }\u000A    return s\u000A}\u000A');codeLines.push('func genByAppendCap() []int {\u000A    s :\u003D make([]int, 0, length)\u000A    for i :\u003D 0; i \u003C length; i++ {\u000A        s \u003D append(s, i)\u000A    }\u000A');codeLines.push('    return s\u000A}\u000A');codeLines.push('func genByAssign() []int {\u000A    s :\u003D make([]int, length)\u000A    for i :\u003D 0; i \u003C length; i++ {\u000A        s[i] \u003D i\u000A    }\u000A    return s\u000A}\u000A');codeLines.push('');codeLines.push('');
     </script>
     <script src="site.js" async></script>
   </body>
