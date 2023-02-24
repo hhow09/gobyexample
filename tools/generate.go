@@ -235,6 +235,11 @@ func parseAndRenderSegs(sourcePath string) ([]*Seg, string) {
 			}
 		}
 	}
+	// ignore test file
+	if strings.HasSuffix(sourcePath, "_test.go") {
+		segs = []*Seg{}
+		filecontent = ""
+	}
 	// we are only interested in the 'go' code to pass to play.golang.org
 	if lexer != "go" {
 		filecontent = ""
