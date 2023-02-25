@@ -12,6 +12,7 @@
 - channels: not initialized
 - functions: not initialized
 - interfaces: have no value assigned, not even a nil pointer
+  - see [nil and interface](./nil-and-interface.md)
 
 
 ## Nil vs Empty Slice
