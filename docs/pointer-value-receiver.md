@@ -63,6 +63,66 @@ type slice struct {
 ## Interfaces
 [Example: Interface pointer-vs-value-receiver](https://github.com/agronskiy/golang-episodes/tree/main/pointer-vs-value-receiver)
 
+### How Interface works?
+consider
+```go
+type notifier interface {
+	notify()
+}
+
+type user struct {
+	name  string
+	email string
+}
+
+func (u *user) notify() {
+	fmt.Printf("Sending user email to %s<%s>\n", u.name, u.email)
+}
+
+func main() {
+	u := user{}
+	var n notifier = u
+}
+```
+
+it will has compile error: 
+```
+cannot use u (variable of type user) as notifier value in variable declaration: user does not implement notifier (method notify has pointer receiver)
+```
+
+#### Interface when assign value to interface
+```
+                         var n notifier
+  notifier               n = user{"Bill"}
+ interface value                               iTable
+┌─────────────┐                             ┌─────────────┐
+│   Address   │                             │             │
+│   iTable    │                             │  Type(user) │
+│             │            Stored Value     │             │
+├─────────────┤           ┌────────────┐    ├─────────────┤
+│             │           │            │    │             │
+│   Address   │           │  User      │    │  Method Set │
+│   User      ├──────────►│  (copied)  │    │             │
+└─────────────┘           └────────────┘    └─────────────┘
+```
+
+#### Interface when assign pointer to interface
+```
+                         var n notifier
+  notifier               n = &user{"Bill"}
+ interface value                               iTable&
+┌─────────────┐                             ┌─────────────┐
+│   Address   │                             │             │
+│   iTable    │                             │  Type(*user)│
+│             │            Stored Value     │             │
+├─────────────┤           ┌────────────┐    ├─────────────┤
+│   Address   │           │  User      │    │  Method Set │
+│   User      ├──────────►│  (copied)  │    │             │
+│             │           │            │    │             │
+└─────────────┘           └────────────┘    └─────────────┘
+```
+
+
 ### Method Set
 given type T
 - the method set of type T consists of all methods with receiver type T
@@ -76,23 +136,10 @@ given type T
 pass value `T` (with pointer receiver `pointerMethod`) that accepct `PointerMethodCaller` interface will not compile
 
 ### Reason
--  interfaces were to be a lightweight structure holding (along with type information) a pointer to the actual variable.
-- interface always holds a copy, hence calling pointer method on a copy does not make much sense for the purposes of modifying the original caller.
+- **interface always holds a copy** (appendix 2), hence calling pointer method on a copy does not make much sense for the purposes of modifying the original caller.
 - there is no safe way for a method call to obtain a pointer
 
 
-```go
-var iface interface{} = (int32)(0)
-// This takes address of the value. Unsafe but works. Not guaranteed to work
-// after possible implementation change!
-var px uintptr = (*[2]uintptr)(unsafe.Pointer(&iface))[1]
-
-iface = (int32)(1)
-var py uintptr = (*[2]uintptr)(unsafe.Pointer(&iface))[1]
-
-fmt.Printf("First pointer %#v,  second pointer %#v", px, py)
-//First pointer 0x10f00fc,  second pointer 0x10f0100
-```
 
 ## Appendix 1 - Pointer Receiver v.s. Value Receiver
 ```go
@@ -124,6 +171,21 @@ func main() {
 	pointer.pointerMethod()
 }
 ```
+
+## Appendix 2 - Interface always hold a copy
+```go
+var iface interface{} = (int32)(0)
+// This takes address of the value. Unsafe but works. Not guaranteed to work
+// after possible implementation change!
+var px uintptr = (*[2]uintptr)(unsafe.Pointer(&iface))[1]
+
+iface = (int32)(1)
+var py uintptr = (*[2]uintptr)(unsafe.Pointer(&iface))[1]
+
+fmt.Printf("First pointer %#v,  second pointer %#v", px, py)
+//First pointer 0x10f00fc,  second pointer 0x10f0100
+```
+
 
 ## Reference
 - [Should I define methods on values or pointers?](https://go.dev/doc/faq#methods_on_values_or_pointers)
