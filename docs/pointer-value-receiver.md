@@ -72,7 +72,6 @@ type notifier interface {
 
 type user struct {
 	name  string
-	email string
 }
 
 func (u *user) notify() {
@@ -80,7 +79,7 @@ func (u *user) notify() {
 }
 
 func main() {
-	u := user{}
+	u := user{"bill"}
 	var n notifier = u
 }
 ```
@@ -90,38 +89,42 @@ it will has compile error:
 cannot use u (variable of type user) as notifier value in variable declaration: user does not implement notifier (method notify has pointer receiver)
 ```
 
-#### Interface when assign value to interface
+#### value type interface
 ```
-                         var n notifier
-  notifier               n = user{"Bill"}
- interface value                               iTable
-┌─────────────┐                             ┌─────────────┐
-│   Address   │                             │             │
-│   iTable    │                             │  Type(user) │
-│             │            Stored Value     │             │
-├─────────────┤           ┌────────────┐    ├─────────────┤
-│             │           │            │    │             │
-│   Address   │           │  User      │    │  Method Set │
-│   User      ├──────────►│  (copied)  │    │             │
+                         var n notifier = u   ── ── ── ── ── ── ── ── ── ──┐
+  notifier                                                                  
+ interface value                               iTable                      │
+┌─────────────┐                             ┌─────────────┐                 
+│   Address   │                             │             │                │
+│   iTable    │                             │  Type(user) │                 
+│             │                             │             │                │
+├─────────────┤           ┌────────────┐    ├─────────────┤           ┌────┴───────┐
+│             │           │            │    │             │           │ User    u  │
+│   Address   │           │  User      │    │  Method Set │           │ (original) │
+│   User      ├──────────►│  (copied)  │    │   of user   │           └────────────┘
 └─────────────┘           └────────────┘    └─────────────┘
+                           Stored Value
 ```
 
-#### Interface when assign pointer to interface
+`notifier` interface Value saves the copy of user value
+
+#### pointer type interface
 ```
-                         var n notifier
-  notifier               n = &user{"Bill"}
- interface value                               iTable&
+                 var n notifier = &u
+  notifier               
+ interface value                  │            iTable
 ┌─────────────┐                             ┌─────────────┐
-│   Address   │                             │             │
+│   Address   │                   │         │             │
 │   iTable    │                             │  Type(*user)│
-│             │            Stored Value     │             │
+│             │                   │         │             │
 ├─────────────┤           ┌────────────┐    ├─────────────┤
 │   Address   │           │  User      │    │  Method Set │
-│   User      ├──────────►│  (copied)  │    │             │
-│             │           │            │    │             │
+│   User      ├──────────►│ (original) │    │   of *user  │
 └─────────────┘           └────────────┘    └─────────────┘
+                           Stored Value
 ```
 
+`notifier` interface Value point to the original user instance
 
 ### Method Set
 given type T
@@ -137,9 +140,10 @@ pass value `T` (with pointer receiver `pointerMethod`) that accepct `PointerMeth
 
 ### Reason
 - **interface always holds a copy** (appendix 2), hence calling pointer method on a copy does not make much sense for the purposes of modifying the original caller.
-- there is no safe way for a method call to obtain a pointer
+- when call the pointer receiver method on value type, there is no safe way for  call to obtain a pointer
 
-
+![interface-method-dereference](./img/interface-method-dereference.jpeg)
+- 
 
 ## Appendix 1 - Pointer Receiver v.s. Value Receiver
 ```go
@@ -172,18 +176,69 @@ func main() {
 }
 ```
 
-## Appendix 2 - Interface always hold a copy
+## Appendix 2 - [Interface always hold a copy](https://go.dev/play/p/KXvtpd9_29)
 ```go
-var iface interface{} = (int32)(0)
-// This takes address of the value. Unsafe but works. Not guaranteed to work
-// after possible implementation change!
-var px uintptr = (*[2]uintptr)(unsafe.Pointer(&iface))[1]
+// Sample program that explores how interface assignments work when
+// values are stored inside the interface.
+package main
 
-iface = (int32)(1)
-var py uintptr = (*[2]uintptr)(unsafe.Pointer(&iface))[1]
+import (
+    "fmt"
+    "unsafe"
+)
 
-fmt.Printf("First pointer %#v,  second pointer %#v", px, py)
-//First pointer 0x10f00fc,  second pointer 0x10f0100
+// notifier provides support for notifying events.
+type notifier interface {
+    notify()
+}
+
+// user represents a user in the system.
+type user struct {
+    name string
+}
+
+// notify implements the notifier interface.
+func (u user) notify() {
+    fmt.Println("Alert", u.name)
+}
+
+func inspect(n *notifier, u *user) {
+    word := uintptr(unsafe.Pointer(n)) + uintptr(unsafe.Sizeof(&u))
+    value := (**user)(unsafe.Pointer(word))
+    fmt.Printf("Addr User: %p  Word Value: %p  Ptr Value: %v\n", u, *value, **value)
+}
+
+func main() {
+
+    // Create a notifier interface and concrete type value.
+    var n1 notifier
+    u := user{"bill"}
+
+    // Store a copy of the user value inside the notifier
+    // interface value.
+    n1 = u
+
+    // We see the interface has its own copy.
+    // Addr User: 0x1040a120  Word Value: 0x10427f70  Ptr Value: {bill}
+    inspect(&n1, &u)
+
+    // Make a copy of the interface value.
+    n2 := n1
+
+    // We see the interface is sharing the same value stored in
+    // the n1 interface value.
+    // Addr User: 0x1040a120  Word Value: 0x10427f70  Ptr Value: {bill}
+    inspect(&n2, &u)
+
+    // Store a copy of the user address value inside the
+    // notifier interface value.
+    n1 = &u
+
+    // We see the interface is sharing the u variables value
+    // directly. There is no copy.
+    // Addr User: 0x1040a120  Word Value: 0x1040a120  Ptr Value: {bill}
+    inspect(&n1, &u)
+}
 ```
 
 
@@ -191,3 +246,5 @@ fmt.Printf("First pointer %#v,  second pointer %#v", px, py)
 - [Should I define methods on values or pointers?](https://go.dev/doc/faq#methods_on_values_or_pointers)
 - [Stackoverflow: Value receiver vs. pointer receiver](https://stackoverflow.com/questions/27775376/value-receiver-vs-pointer-receiver)
 - [Summary to the difference between T and T* method sets in Go](https://gronskiy.com/posts/2020-04-golang-pointer-vs-value-methods/)
+- [Copying Interface Values In Go](https://www.ardanlabs.com/blog/2016/05/copying-interface-values-in-go.html)
+- [[Go] 為什麼 Pointer Receiver 不能使用 Value Type 賦值給 Interface Value](https://mileslin.github.io/2020/08/Golang/%E7%82%BA%E4%BB%80%E9%BA%BC-Pointer-Receiver-%E4%B8%8D%E8%83%BD%E4%BD%BF%E7%94%A8-Value-Type-%E8%B3%A6%E5%80%BC%E7%B5%A6-Interface-Value/)
