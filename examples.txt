@@ -11,6 +11,7 @@ Methods | methods
 Channel: Merge | channel-merge
 Issue: Goroutine Leak | issue-goroutine-leak
 encoding/json | encoding-json
+Url Parsing | url-parsing
 http Request | http-req
 http.RoundTripper | http-roundtripper
 http/httptrace | http-trace
