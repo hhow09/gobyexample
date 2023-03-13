@@ -14,7 +14,7 @@
           
           
           if (e.key == "ArrowRight") {
-              window.location.href = 'http-req.html';
+              window.location.href = 'url-parsing.html';
           }
           
       }
@@ -465,7 +465,7 @@
       
       
       <p class="next">
-        Next example: <a href="http-req.html">http Request</a>.
+        Next example: <a href="url-parsing.html">Url Parsing</a>.
       </p>
       
 
