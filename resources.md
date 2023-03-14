@@ -9,6 +9,8 @@
 
 ## Books
 1. [Go in Action](https://www.manning.com/books/go-in-action)
+2. [Distributed Services with Go](https://www.oreilly.com/library/view/distributed-services-with/9781680508376/)
+3. [Go语言高级编程(Advanced Go Programming)](https://chai2010.cn/advanced-go-programming-book/index.html#go%E8%AF%AD%E8%A8%80%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8Badvanced-go-programming)
 
 ## Design Patterns / Best Practice
 1. [awesome-patterns](https://crazybber.github.io/awesome-patterns/)
