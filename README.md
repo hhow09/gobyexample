@@ -7,6 +7,10 @@ learning resources: [resources](./resources.md)
 details & internals: [docs](./docs)
 
 ## Develop Notes
+### Setup
+1. `make tools`
+2. `make serve` to check if everything works fine
+
 ### Add Examples
 1. create feature branch
 2. add example to `examples.txt` `<title>|<folder-name>`
