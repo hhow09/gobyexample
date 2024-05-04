@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Go by Example: Reflection</title>
+    <link rel=stylesheet href="site.css">
+  </head>
+  <script>
+      onkeydown = (e) => {
+          
+          if (e.key == "ArrowLeft") {
+              window.location.href = 'channel-merge.html';
+          }
+          
+          
+          if (e.key == "ArrowRight") {
+              window.location.href = 'issue-goroutine-leak.html';
+          }
+          
+      }
+  </script>
+  <body>
+    <div class="example" id="reflection">
+      <h2><a href="./">Go by Example</a>: Reflection</h2>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            <a href="https://go.dev/play/p/PRJaH7JshrX"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+          <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;bytes&#34;</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;reflect&#34;</span>
+    <span class="s">&#34;strconv&#34;</span>
+    <span class="s">&#34;strings&#34;</span>
+<span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>Part 1 - Law of reflections and Go reflect package basic operations
+Part 2 from 28:50 - Implementing a small JSON encoder using reflection</p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Name</span> <span class="kt">string</span> <span class="s">`en:&#34;name&#34; it:&#34;nome&#34;`</span>
+    <span class="nx">Age</span>  <span class="kt">int64</span>  <span class="s">`en:&#34;age&#34; it:&#34;eta&#34;`</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">type</span> <span class="nx">City</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Name</span>       <span class="kt">string</span> <span class="s">`en:&#34;name&#34; it:&#34;nome&#34;`</span>
+    <span class="nx">Population</span> <span class="kt">int64</span>  <span class="s">`en:&#34;pop&#34; it:&#34;pop&#34;`</span>
+    <span class="nx">GDP</span>        <span class="kt">int64</span>  <span class="s">`en:&#34;gdp&#34; it:&#34;pil&#34;`</span>
+    <span class="nx">Mayor</span>      <span class="kt">string</span> <span class="s">`en:&#34;mayor&#34; it:&#34;sindaco&#34;`</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">x</span> <span class="kt">float64</span> <span class="p">=</span> <span class="mf">3.14</span>
+    <span class="kd">var</span> <span class="nx">u</span> <span class="nx">User</span> <span class="p">=</span> <span class="nx">User</span><span class="p">{</span><span class="s">&#34;bob&#34;</span><span class="p">,</span> <span class="mi">10</span><span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>1st law: you can go from interface value to reflection obj</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">refObjValPtr</span> <span class="o">:=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">ValueOf</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">x</span><span class="p">)</span>
+    <span class="nx">refObjtyp</span> <span class="o">:=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">x</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;ref obj val for × %s\n&#34;</span><span class="p">,</span> <span class="nx">refObjValPtr</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;ref obj typ for × %s\n&#34;</span><span class="p">,</span> <span class="nx">refObjtyp</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>2nd law: you can from reflection obj to interface value
+deference the ptr to its actual value</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">refObjVal</span> <span class="o">:=</span> <span class="nx">refObjValPtr</span><span class="p">.</span><span class="nf">Elem</span><span class="p">()</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;ref obj val for float64 x: %f\n&#34;</span><span class="p">,</span> <span class="nx">refObjVal</span><span class="p">.</span><span class="nf">Float</span><span class="p">())</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;can set new val for refl obj? %v\n&#34;</span><span class="p">,</span> <span class="nx">refObjVal</span><span class="p">.</span><span class="nf">CanSet</span><span class="p">())</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>3rd law when modifying reflection objects,
+not all of them can be settable</p>
+
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">
+    <span class="nx">refObjVal</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">reflect</span><span class="p">.</span><span class="nf">ValueOf</span><span class="p">(</span><span class="mf">4.25</span><span class="p">))</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;updated × using ptr and reflection obj, now val %f \n&#34;</span><span class="p">,</span> <span class="nx">x</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">JSONEncode</span><span class="p">(</span><span class="nx">u</span><span class="p">,</span> <span class="s">&#34;en&#34;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">res</span><span class="p">))</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">c</span> <span class="o">:=</span> <span class="nx">City</span><span class="p">{</span><span class="s">&#34;sf&#34;</span><span class="p">,</span> <span class="mi">5000000</span><span class="p">,</span> <span class="mi">567896</span><span class="p">,</span> <span class="s">&#34;mr jones&#34;</span><span class="p">}</span>
+    <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">JSONEncode</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s">&#34;it&#34;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">res</span><span class="p">))</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma"><span class="kd">func</span> <span class="nf">JSONEncode</span><span class="p">(</span><span class="nx">v</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">tagKey</span> <span class="kt">string</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">refObjVal</span> <span class="o">:=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">ValueOf</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+    <span class="nx">refObjTyp</span> <span class="o">:=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+    <span class="nx">buf</span> <span class="o">:=</span> <span class="nx">bytes</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">{}</span>
+    <span class="k">if</span> <span class="nx">refObjVal</span><span class="p">.</span><span class="nf">Kind</span><span class="p">()</span> <span class="o">!=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nx">Struct</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">(),</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span>
+            <span class="s">&#34;val of kind %s is not supported&#34;</span><span class="p">,</span>
+            <span class="nx">refObjVal</span><span class="p">.</span><span class="nf">Kind</span><span class="p">(),</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">buf</span><span class="p">.</span><span class="nf">WriteString</span><span class="p">(</span><span class="s">&#34;{&#34;</span><span class="p">)</span>
+    <span class="nx">pairs</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{}</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">refObjVal</span><span class="p">.</span><span class="nf">NumField</span><span class="p">();</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">structFieldRefObj</span> <span class="o">:=</span> <span class="nx">refObjVal</span><span class="p">.</span><span class="nf">Field</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+        <span class="nx">structFieldRefObjTyp</span> <span class="o">:=</span> <span class="nx">refObjTyp</span><span class="p">.</span><span class="nf">Field</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">        <span class="nx">tag</span> <span class="o">:=</span> <span class="nx">structFieldRefObjTyp</span><span class="p">.</span><span class="nx">Tag</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">tagKey</span><span class="p">)</span>
+        <span class="k">switch</span> <span class="nx">structFieldRefObj</span><span class="p">.</span><span class="nf">Kind</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="nx">reflect</span><span class="p">.</span><span class="nx">String</span><span class="p">:</span>
+            <span class="nx">strVal</span> <span class="o">:=</span> <span class="nx">structFieldRefObj</span><span class="p">.</span><span class="nf">Interface</span><span class="p">().(</span><span class="kt">string</span><span class="p">)</span>
+            <span class="nx">pairs</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">pairs</span><span class="p">,</span> <span class="s">`&#34;`</span><span class="o">+</span><span class="nx">tag</span><span class="o">+</span><span class="s">`&#34;:&#34;`</span><span class="o">+</span><span class="nx">strVal</span><span class="o">+</span><span class="s">`&#34;`</span><span class="p">)</span>
+        <span class="k">case</span> <span class="nx">reflect</span><span class="p">.</span><span class="nx">Int64</span><span class="p">:</span>
+            <span class="nx">intVal</span> <span class="o">:=</span> <span class="nx">structFieldRefObj</span><span class="p">.</span><span class="nf">Interface</span><span class="p">().(</span><span class="kt">int64</span><span class="p">)</span>
+            <span class="nx">pairs</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">pairs</span><span class="p">,</span> <span class="s">`&#34;`</span><span class="o">+</span><span class="nx">tag</span><span class="o">+</span><span class="s">`&#34;:`</span><span class="o">+</span><span class="nx">strconv</span><span class="p">.</span><span class="nf">FormatInt</span><span class="p">(</span><span class="nx">intVal</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+        <span class="k">default</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">(),</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span>
+                <span class="s">&#34;struct field with name %s and kind %s is not supprted&#34;</span><span class="p">,</span>
+                <span class="nx">structFieldRefObjTyp</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span>
+                <span class="nx">structFieldRefObj</span><span class="p">.</span><span class="nf">Kind</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="nx">buf</span><span class="p">.</span><span class="nf">WriteString</span><span class="p">(</span><span class="nx">strings</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">pairs</span><span class="p">,</span> <span class="s">&#34;,&#34;</span><span class="p">))</span>
+    <span class="nx">buf</span><span class="p">.</span><span class="nf">WriteString</span><span class="p">(</span><span class="s">&#34;}&#34;</span><span class="p">)</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code leading">
+            
+          <pre class="chroma">    <span class="k">return</span> <span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">(),</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</pre>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>ref: <a href="https://go.dev/blog/laws-of-reflection">The Go Blog: The Laws of Reflection</a></p>
+
+          </td>
+          <td class="code empty leading">
+            
+          
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="docs">
+            <p>ref: <a href="https://youtu.be/f4aUrm7N5DU">Go (Golang) Reflection Tutorial</a></p>
+
+          </td>
+          <td class="code empty">
+            
+          
+          </td>
+        </tr>
+        
+      </table>
+      
+      <table>
+        
+        <tr>
+          <td class="docs">
+            
+          </td>
+          <td class="code">
+            
+          <pre class="chroma"><span class="gp">$</span> go run reflection.go
+<span class="go">ref obj val for × &lt;*float64 Value&gt;
+</span><span class="go">ref obj typ for × *float64
+</span><span class="go">ref obj val for float64 x: 3.140000
+</span><span class="go">can set new val for refl obj? true
+</span><span class="go">updated × using ptr and reflection obj, now val 4.250000
+</span><span class="go">{&#34;name&#34;:&#34;bob&#34;,&#34;age&#34;:10}
+</span><span class="go">{&#34;nome&#34;:&#34;sf&#34;,&#34;pop&#34;:5000000,&#34;pil&#34;:567896,&#34;sindaco&#34;:&#34;mr jones&#34;}</span></pre>
+          </td>
+        </tr>
+        
+      </table>
+      
+      
+      <p class="next">
+        Next example: <a href="issue-goroutine-leak.html">Issue: Goroutine Leak</a>.
+      </p>
+      
+
+    <p class="footer">
+      <a href="https://github.com/hhow09/gobyexample">source</a>
+      <br/>
+      Forked from <a href="https://gobyexample.com">Go by Example</a>
+    </p>
+
+    </div>
+    <script>
+      var codeLines = [];
+      codeLines.push('package main\u000A');codeLines.push('import (\u000A    \"bytes\"\u000A    \"fmt\"\u000A    \"reflect\"\u000A    \"strconv\"\u000A    \"strings\"\u000A)\u000A');codeLines.push('');codeLines.push('type User struct {\u000A    Name string `en:\"name\" it:\"nome\"`\u000A    Age  int64  `en:\"age\" it:\"eta\"`\u000A}\u000A');codeLines.push('type City struct {\u000A    Name       string `en:\"name\" it:\"nome\"`\u000A    Population int64  `en:\"pop\" it:\"pop\"`\u000A    GDP        int64  `en:\"gdp\" it:\"pil\"`\u000A    Mayor      string `en:\"mayor\" it:\"sindaco\"`\u000A}\u000A');codeLines.push('func main() {\u000A    var x float64 \u003D 3.14\u000A    var u User \u003D User{\"bob\", 10}\u000A');codeLines.push('    refObjValPtr :\u003D reflect.ValueOf(\u0026x)\u000A    refObjtyp :\u003D reflect.TypeOf(\u0026x)\u000A    fmt.Printf(\"ref obj val for × %s\\n\", refObjValPtr.String())\u000A    fmt.Printf(\"ref obj typ for × %s\\n\", refObjtyp.String())\u000A');codeLines.push('    refObjVal :\u003D refObjValPtr.Elem()\u000A    fmt.Printf(\"ref obj val for float64 x: %f\\n\", refObjVal.Float())\u000A    fmt.Printf(\"can set new val for refl obj? %v\\n\", refObjVal.CanSet())\u000A');codeLines.push('    refObjVal.Set(reflect.ValueOf(4.25))\u000A    fmt.Printf(\"updated × using ptr and reflection obj, now val %f \\n\", x)\u000A');codeLines.push('    res, err :\u003D JSONEncode(u, \"en\")\u000A    if err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    fmt.Println(string(res))\u000A');codeLines.push('    c :\u003D City{\"sf\", 5000000, 567896, \"mr jones\"}\u000A    res, err \u003D JSONEncode(c, \"it\")\u000A    if err !\u003D nil {\u000A        panic(err)\u000A    }\u000A    fmt.Println(string(res))\u000A}\u000A');codeLines.push('func JSONEncode(v interface{}, tagKey string) ([]byte, error) {\u000A    refObjVal :\u003D reflect.ValueOf(v)\u000A    refObjTyp :\u003D reflect.TypeOf(v)\u000A    buf :\u003D bytes.Buffer{}\u000A    if refObjVal.Kind() !\u003D reflect.Struct {\u000A        return buf.Bytes(), fmt.Errorf(\u000A            \"val of kind %s is not supported\",\u000A            refObjVal.Kind(),\u000A        )\u000A    }\u000A    buf.WriteString(\"{\")\u000A    pairs :\u003D []string{}\u000A    for i :\u003D 0; i \u003C refObjVal.NumField(); i++ {\u000A        structFieldRefObj :\u003D refObjVal.Field(i)\u000A        structFieldRefObjTyp :\u003D refObjTyp.Field(i)\u000A');codeLines.push('        tag :\u003D structFieldRefObjTyp.Tag.Get(tagKey)\u000A        switch structFieldRefObj.Kind() {\u000A        case reflect.String:\u000A            strVal :\u003D structFieldRefObj.Interface().(string)\u000A            pairs \u003D append(pairs, `\"`+tag+`\":\"`+strVal+`\"`)\u000A        case reflect.Int64:\u000A            intVal :\u003D structFieldRefObj.Interface().(int64)\u000A            pairs \u003D append(pairs, `\"`+tag+`\":`+strconv.FormatInt(intVal, 10))\u000A        default:\u000A            return buf.Bytes(), fmt.Errorf(\u000A                \"struct field with name %s and kind %s is not supprted\",\u000A                structFieldRefObjTyp.Name,\u000A                structFieldRefObj.Kind(),\u000A            )\u000A        }\u000A    }\u000A');codeLines.push('    buf.WriteString(strings.Join(pairs, \",\"))\u000A    buf.WriteString(\"}\")\u000A');codeLines.push('    return buf.Bytes(), nil\u000A}\u000A');codeLines.push('');codeLines.push('');codeLines.push('');
+    </script>
+    <script src="site.js" async></script>
+  </body>
+</html>

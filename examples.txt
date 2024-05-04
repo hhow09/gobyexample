@@ -9,6 +9,7 @@ Inheritence (interface) | inheritence-interface
 Generics
 Methods | methods
 Channel: Merge | channel-merge
+Reflection | reflection
 Issue: Goroutine Leak | issue-goroutine-leak
 encoding/json | encoding-json
 Url Parsing | url-parsing
