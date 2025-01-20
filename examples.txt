@@ -11,6 +11,7 @@ Methods | methods
 Channel: Merge | channel-merge
 Reflection | reflection
 Issue: Goroutine Leak | issue-goroutine-leak
+Issue: Loop Struct Slice | issue-loop-struct-slice
 encoding/json | encoding-json
 Url Parsing | url-parsing
 http Request | http-req
