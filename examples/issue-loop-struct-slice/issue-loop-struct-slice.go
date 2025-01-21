@@ -1,8 +1,14 @@
-// interview questions:
+// Challenge:
 //
 // What is expected output?
 //
 // How to fix this code?
+//
+// Reference: [Go Wiki: Range Clauses](https://go.dev/wiki/Range)
+//
+// Reference: [Should you use slices of pointers to structs?](https://www.willem.dev/articles/slice-of-pointers-structs/)
+//
+// Reference: [Go Spec: For statements](https://go.dev/ref/spec#For_statements)
 
 package main
 
@@ -26,19 +32,23 @@ func main() {
 		fmt.Printf("player %s has score %d\n", p.name, p.score)
 	}
 
-	// (End of Question)
+	// (End of Challenge)
 	// ----------
 
 	// Explaination:
-	// The player struct is stored in the backing array of the slice players
 	//
-	// `p` is actually only a copy of the original player
+	// - The player struct is stored in the backing array of the slice players
+	//
+	// - p is declaredin in range clause using a form of [short variable declaration (:=)](https://go.dev/ref/spec#Short_variable_declarations). The variables have the types of their respective iteration values.
+	//
+	// - `p` is only a copy of the original player
+	//
+	// - when updating `p.score`, it only updates the "copy" of the player in the slice
 	for _, p := range players {
 		p.score += 10
 	}
 
 	// How to fix it?
-
 	fmt.Println("---- After fix ------")
 	// Directly access the player in the slice
 	for i := range players {
@@ -48,12 +58,4 @@ func main() {
 	for _, p := range players {
 		fmt.Printf("player %s has score %d\n", p.name, p.score)
 	}
-
-	// Output:
-	//
-	// player Bob has score 20
-	//
-	// player Alice has score 217
 }
-
-// Reference: [Should you use slices of pointers to structs?](https://www.willem.dev/articles/slice-of-pointers-structs/)
