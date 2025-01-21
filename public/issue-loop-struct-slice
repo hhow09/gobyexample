@@ -27,11 +27,17 @@
         
         <tr>
           <td class="docs">
-            <p>interview questions:</p>
+            <p>Challenge:</p>
 
 <p>What is expected output?</p>
 
 <p>How to fix this code?</p>
+
+<p>Reference: <a href="https://go.dev/wiki/Range">Go Wiki: Range Clauses</a></p>
+
+<p>Reference: <a href="https://www.willem.dev/articles/slice-of-pointers-structs/">Should you use slices of pointers to structs?</a></p>
+
+<p>Reference: <a href="https://go.dev/ref/spec#For_statements">Go Spec: For statements</a></p>
 
           </td>
           <td class="code empty leading">
@@ -45,7 +51,7 @@
             
           </td>
           <td class="code leading">
-            <a href="https://go.dev/play/p/b5YAS_z1uop"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
+            <a href="https://go.dev/play/p/gb9N6mi5JjT"><img title="Run code" src="play.png" class="run" /></a><img title="Copy code" src="clipboard.png" class="copy" />
           <pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
 </pre>
           </td>
@@ -109,7 +115,7 @@
         
         <tr>
           <td class="docs">
-            <p>(End of Question)</p>
+            <p>(End of Challenge)</p>
 
 <hr />
 
@@ -122,10 +128,17 @@
         
         <tr>
           <td class="docs">
-            <p>Explaination:
-The player struct is stored in the backing array of the slice players</p>
+            <p>Explaination:</p>
 
-<p><code>p</code> is actually only a copy of the original player</p>
+<ul>
+<li><p>The player struct is stored in the backing array of the slice players</p></li>
+
+<li><p>p is declaredin in range clause using a form of <a href="https://go.dev/ref/spec#Short_variable_declarations">short variable declaration (:=)</a>. The variables have the types of their respective iteration values.</p></li>
+
+<li><p><code>p</code> is only a copy of the original player</p></li>
+
+<li><p>when updating <code>p.score</code>, it only updates the &ldquo;copy&rdquo; of the player in the slice</p></li>
+</ul>
 
           </td>
           <td class="code leading">
@@ -143,9 +156,11 @@ The player struct is stored in the backing array of the slice players</p>
             <p>How to fix it?</p>
 
           </td>
-          <td class="code empty leading">
+          <td class="code leading">
             
-          
+          <pre class="chroma">
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;---- After fix ------&#34;</span><span class="p">)</span>
+</pre>
           </td>
         </tr>
         
@@ -156,18 +171,8 @@ The player struct is stored in the backing array of the slice players</p>
           </td>
           <td class="code leading">
             
-          <pre class="chroma">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;---- After fix ------&#34;</span><span class="p">)</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma">    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">players</span> <span class="p">{</span>
+          <pre class="chroma">
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">players</span> <span class="p">{</span>
         <span class="nx">players</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">score</span> <span class="o">+=</span> <span class="mi">10</span>
     <span class="p">}</span>
 </pre>
@@ -178,40 +183,13 @@ The player struct is stored in the backing array of the slice players</p>
           <td class="docs">
             
           </td>
-          <td class="code leading">
+          <td class="code">
             
           <pre class="chroma">    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">p</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">players</span> <span class="p">{</span>
         <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;player %s has score %d\n&#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span>
     <span class="p">}</span>
-</pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            <p>Output:</p>
-
-<p>player Bob has score 20</p>
-
-<p>player Alice has score 217</p>
-
-          </td>
-          <td class="code leading">
-            
-          <pre class="chroma">
 <span class="p">}</span>
 </pre>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="docs">
-            <p>Reference: <a href="https://www.willem.dev/articles/slice-of-pointers-structs/">Should you use slices of pointers to structs?</a></p>
-
-          </td>
-          <td class="code empty">
-            
-          
           </td>
         </tr>
         
@@ -250,7 +228,7 @@ The player struct is stored in the backing array of the slice players</p>
     </div>
     <script>
       var codeLines = [];
-      codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import \"fmt\"\u000A');codeLines.push('func main() {\u000A    type player struct {\u000A        name  string\u000A        score int\u000A    }\u000A    players :\u003D []player{\u000A        {\"Bob\", 10},\u000A        {\"Alice\", 207},\u000A    }\u000A');codeLines.push('    for _, p :\u003D range players {\u000A        p.score +\u003D 10\u000A    }\u000A');codeLines.push('    for _, p :\u003D range players {\u000A        fmt.Printf(\"player %s has score %d\\n\", p.name, p.score)\u000A    }\u000A');codeLines.push('');codeLines.push('    for _, p :\u003D range players {\u000A        p.score +\u003D 10\u000A    }\u000A');codeLines.push('');codeLines.push('    fmt.Println(\"---- After fix ------\")\u000A');codeLines.push('    for i :\u003D range players {\u000A        players[i].score +\u003D 10\u000A    }\u000A');codeLines.push('    for _, p :\u003D range players {\u000A        fmt.Printf(\"player %s has score %d\\n\", p.name, p.score)\u000A    }\u000A');codeLines.push('}\u000A');codeLines.push('');codeLines.push('');
+      codeLines.push('');codeLines.push('package main\u000A');codeLines.push('import \"fmt\"\u000A');codeLines.push('func main() {\u000A    type player struct {\u000A        name  string\u000A        score int\u000A    }\u000A    players :\u003D []player{\u000A        {\"Bob\", 10},\u000A        {\"Alice\", 207},\u000A    }\u000A');codeLines.push('    for _, p :\u003D range players {\u000A        p.score +\u003D 10\u000A    }\u000A');codeLines.push('    for _, p :\u003D range players {\u000A        fmt.Printf(\"player %s has score %d\\n\", p.name, p.score)\u000A    }\u000A');codeLines.push('');codeLines.push('    for _, p :\u003D range players {\u000A        p.score +\u003D 10\u000A    }\u000A');codeLines.push('    fmt.Println(\"---- After fix ------\")\u000A');codeLines.push('    for i :\u003D range players {\u000A        players[i].score +\u003D 10\u000A    }\u000A');codeLines.push('    for _, p :\u003D range players {\u000A        fmt.Printf(\"player %s has score %d\\n\", p.name, p.score)\u000A    }\u000A}\u000A');codeLines.push('');
     </script>
     <script src="site.js" async></script>
   </body>
